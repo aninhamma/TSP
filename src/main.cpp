@@ -42,8 +42,6 @@ void escolher3NosAleatorios(vector <int> &sequencia, vector <int> &CL){//funcao 
 
       sequencia.insert(sequencia.end() - 1, CL[n]);//insere o no escolhido na penultima posicao
 
-      cout << n << "primeiroteste";
-
       removeDaLista(CL, n);//remove o no inserido da lista de candidados
 
   }
@@ -53,15 +51,7 @@ void escolher3NosAleatorios(vector <int> &sequencia, vector <int> &CL){//funcao 
 
 vector<InsertionInfo> calcularCustoInsercao(vector <int> &sequencia, vector <int> &CL){
 
-  cout << "print inicio do calcular custo insercao" << endl;
-
-  cout << "print tamanho da lista de candidatos" << CL.size() << endl;
-
-  cout << sequencia.size() - 1 << endl;
-
   vector<InsertionInfo> custoInsercao((sequencia.size() - 1) * CL.size());
-
-  cerr << CL.size() << " ";
 
   int l = 0;
   for(int a = 0, b = 1; a < sequencia.size() - 1; a++, b++){
@@ -88,9 +78,9 @@ void ordenarEmOrdemCrescente(vector<InsertionInfo> &custoInsercao){
 
 }
 
-void InserirNaSolucao(vector <int> &sequencia, int selecionado){
-  
-  sequencia.insert(sequencia.end() - 1, selecionado);
+void InserirNaSolucao(vector <int> &sequencia, int selecionado, int arestaRemovida){
+
+  sequencia.insert(sequencia.begin() + arestaRemovida + 1, selecionado);
 }
 
 int main(int argc, char** argv) {
@@ -102,11 +92,11 @@ int main(int argc, char** argv) {
     vector <int> sequencia;
     int i;
 
-    //cout << "teste" << endl;
-
     for(i = 0; i < dimension; i++){
       CL.push_back(i+1);
     }
+
+    cout << "Lista de candidatos: " << endl;
 
     for (i = 0; i < CL.size() - 1; i++) {
       cout << CL[i] << "->";
@@ -115,53 +105,42 @@ int main(int argc, char** argv) {
 
     escolher3NosAleatorios(sequencia, CL);
 
-    cout << endl;
+    cout << "Tres cidades iniciais: " << endl;
 
     for(i = 0; i < sequencia.size() - 1; i++){
       cout << sequencia[i] << "->";
     }
-      //cout << sequencia.back() << endl;
+      cout << sequencia.back() << endl;
     
     
 
     double alpha = (double) rand() / RAND_MAX;
 
-    //cout << "teste 2";
-
-    cout << sequencia.size() << endl;
-
-    for(i = 0; i < CL.size() - 1; i++){
-      cout << CL[i] << "->";
-    }
-      cout << CL.back() << endl;
+    vector<InsertionInfo> custoInsercao = calcularCustoInsercao(sequencia, CL);
 
     while(!CL.empty()){
-
-      //cout << "teste 3";
-      vector<InsertionInfo> custoInsercao = calcularCustoInsercao(sequencia, CL);
-
-      cout << "oi" << endl;
     
       ordenarEmOrdemCrescente(custoInsercao);
 
       int custoS = (int)(alpha * custoInsercao.size());
 
-      cout << custoInsercao.size() << endl;
-      //cout << "oi2" << endl;
-
       int selecionado = rand() % custoS;
 
-      //cout << "oi3" << endl;
+      InserirNaSolucao(sequencia, custoInsercao[selecionado].noInserido, custoInsercao[selecionado].arestaRemovida); 
+    
+      for(int i = 0; i < CL.size(); i++){
+        int k = custoInsercao[selecionado].noInserido;
+        if(CL[i] == k){
+          removeDaLista(CL, i);
+        }
+      }
 
-      InserirNaSolucao(sequencia, selecionado);
+      custoInsercao = calcularCustoInsercao(sequencia, CL);
 
-      //cout << "oi4" <<  selecionado << endl;
-
-      removeDaLista(CL, selecionado);
-
-      //cout << "oi5" << endl; 
 
     }
+
+    cout << "Solucao inicial: " << endl;
 
     for(i = 0; i < sequencia.size() - 1; i++) 
       cout << sequencia[i] << "->";
