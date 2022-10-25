@@ -119,6 +119,7 @@ bool bestImprovementSwap(vector <int> &sequencia, double custo){
       cout << "delta: " << delta << endl; 
 
         if(delta < bestDelta){
+          //cout << "comparacao dos deltas" << endl;
           bestDelta = delta;
           best_i = i;
           best_j = j;
@@ -128,14 +129,47 @@ bool bestImprovementSwap(vector <int> &sequencia, double custo){
 
   if(bestDelta < 0){
     swap(sequencia[best_i], sequencia[best_j]);
+    cout << "custo antes da troca: " << custo << endl;
     custo = custo - delta;
+    cout << "custo apos a troca: " << custo << endl;
+    return true; 
+  }else{
+    return false;
+  }
+  
+}
+
+/*bool bestImprovement2Opt(vector <int> &sequencia, double custo){
+  double delta;
+  double bestDelta = 0;
+  int best_i = 0, best_j = 0;
+  for(int i = 1; i < sequencia.size() - 1; i++){
+    for(int j = i + 1; j < sequencia.size() - 1; j++){
+      delta = calculateSwapCost(i, j, sequencia);
+
+      cout << "delta: " << delta << endl; 
+
+        if(delta < bestDelta){
+          //cout << "comparacao dos deltas" << endl;
+          bestDelta = delta;
+          best_i = i;
+          best_j = j;
+        }
+    }
+  }
+
+  if(bestDelta < 0){
+    swap(sequencia[best_i], sequencia[best_j]);
+    cout << "custo antes da troca" << custo << endl;
+    custo = custo - bestDelta;
+    cout << "custo apos a troca" << custo << endl;
     return true; 
   }else{
     return false;
   }
   
   cout << "custo apos swap: " << custo << endl;
-}
+}*/
 
 int main(int argc, char** argv) {
 
@@ -146,7 +180,7 @@ int main(int argc, char** argv) {
     vector <int> sequencia;//primeira solucao
     vector <int> best;//solucao melhorada
     int i;
-    double custo, teste;
+    double custo = 0;
 
     for(i = 0; i < dimension; i++){
       CL.push_back(i+1);
@@ -174,7 +208,7 @@ int main(int argc, char** argv) {
 
     vector<InsertionInfo> custoInsercao = calcularCustoInsercao(sequencia, CL);
 
-    while(!CL.empty()){
+    while(!CL.empty()){ 
     
       ordenarEmOrdemCrescente(custoInsercao);
 
@@ -204,12 +238,13 @@ int main(int argc, char** argv) {
 
     custo = custoDaSolucao(sequencia);
 
-    cout << "custo da solucao inicial: " << custoDaSolucao << endl;
+    cout << "custo da solucao inicial: " << custo << endl;
 
 
     //.......................Busca local......................//
 
-    //best = sequencia; //solucao melhorada recebe a solucao inicial   
+    //best = sequencia; //solucao melhorada recebe a solucao inicial  
+
 
     bestImprovementSwap(sequencia, custo);
 
