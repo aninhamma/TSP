@@ -116,8 +116,6 @@ bool bestImprovementSwap(vector <int> &sequencia, double custo){
     for(int j = i + 1; j < sequencia.size() - 1; j++){
       delta = calculateSwapCost(i, j, sequencia);
 
-      cout << "delta: " << delta << endl; 
-
         if(delta < bestDelta){
           //cout << "comparacao dos deltas" << endl;
           bestDelta = delta;
@@ -130,8 +128,8 @@ bool bestImprovementSwap(vector <int> &sequencia, double custo){
   if(bestDelta < 0){
     swap(sequencia[best_i], sequencia[best_j]);
     cout << "custo antes da troca: " << custo << endl;
-    custo = custo - delta;
-    cout << "custo apos a troca: " << custo << endl;
+    custo = custo + delta;
+    cout << "custo apos a troca: " << custo << endl; 
     return true; 
   }else{
     return false;
@@ -139,18 +137,23 @@ bool bestImprovementSwap(vector <int> &sequencia, double custo){
   
 }
 
-/*bool bestImprovement2Opt(vector <int> &sequencia, double custo){
+double calculate2OptCost(int i, int j, vector<int> &sequencia){
+  double delta;
+
+  delta = -matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[j]][sequencia[j + 1]] + matrizAdj[sequencia[i - 1]][sequencia[j]] + matrizAdj[sequencia[i]][sequencia[j + 1]];
+
+  return delta;
+}
+
+bool bestImprovement2Opt(vector <int> &sequencia, double custo){
   double delta;
   double bestDelta = 0;
   int best_i = 0, best_j = 0;
   for(int i = 1; i < sequencia.size() - 1; i++){
     for(int j = i + 1; j < sequencia.size() - 1; j++){
-      delta = calculateSwapCost(i, j, sequencia);
-
-      cout << "delta: " << delta << endl; 
+      delta = calculate2OptCost(i, j, sequencia);
 
         if(delta < bestDelta){
-          //cout << "comparacao dos deltas" << endl;
           bestDelta = delta;
           best_i = i;
           best_j = j;
@@ -160,21 +163,20 @@ bool bestImprovementSwap(vector <int> &sequencia, double custo){
 
   if(bestDelta < 0){
     swap(sequencia[best_i], sequencia[best_j]);
-    cout << "custo antes da troca" << custo << endl;
+    cout << "custo antes do 2opt: " << custo << endl;
     custo = custo - bestDelta;
-    cout << "custo apos a troca" << custo << endl;
+    cout << "custo apos o 2opt: " << custo << endl;
     return true; 
   }else{
     return false;
   }
   
-  cout << "custo apos swap: " << custo << endl;
-}*/
+}
 
 int main(int argc, char** argv) {
 
     readData(argc, argv, &dimension, &matrizAdj);
-    printData();
+    printData();  
 
     vector <int> CL;
     vector <int> sequencia;//primeira solucao
@@ -208,7 +210,7 @@ int main(int argc, char** argv) {
 
     vector<InsertionInfo> custoInsercao = calcularCustoInsercao(sequencia, CL);
 
-    while(!CL.empty()){ 
+    while(!CL.empty()){
     
       ordenarEmOrdemCrescente(custoInsercao);
 
@@ -248,6 +250,7 @@ int main(int argc, char** argv) {
 
     bestImprovementSwap(sequencia, custo);
 
+    bestImprovement2Opt(sequencia, custo);
 
     return 0; 
 
