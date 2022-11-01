@@ -173,6 +173,50 @@ bool bestImprovement2Opt(vector <int> &sequencia, double custo){
   
 }
 
+double calculateReinsertionCost(int i, int j, vector<int> &sequencia){
+  double delta;
+
+  double parteDaSeqInicial = -(matrizAdj[sequencia[i]][sequencia[i + 1]] + matrizAdj[sequencia[i]][sequencia[i - 1]] +
+                              matrizAdj[sequencia[j]][sequencia[j + 1]] + matrizAdj[sequencia[j]][sequencia[j - 1]]);
+
+  if(j == i + 1){
+    delta = -matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[j]][sequencia[j + 1]] + matrizAdj[sequencia[i - 1]][sequencia[j]] + matrizAdj[sequencia[i]][sequencia[j + 1]]; 
+  }else{
+    delta = parteDaSeqInicial = matrizAdj[sequencia[i - 1]][sequencia[i + 1]] + matrizAdj[sequencia[j]][sequencia[i]] + matrizAdj[sequencia[i]][sequencia[j + 1]];
+  }
+  return delta;
+}
+
+bool bestImprovementReinsertion(vector <int> &sequencia, double custo){
+  double delta;
+  double bestDelta = 0;
+  int best_i = 0, best_j = 0;
+  for(int i = 1; i < sequencia.size() - 1; i++){
+    for(int j = i + 1; j < sequencia.size() - 1; j++){
+      delta = calculateReinsertionCost(i, j, sequencia);
+
+      //cout << "Delta: " << delta << endl;
+      
+        if(delta < bestDelta){
+          bestDelta = delta;
+          best_i = i;
+          best_j = j;
+        }
+    }
+  }
+
+  if(bestDelta < 0){
+    swap(sequencia[best_i], sequencia[best_j]);
+    cout << "custo antes do reinsertion: " << custo << endl;
+    custo = custo - bestDelta;
+    cout << "custo apos o reinsertion: " << custo << endl;
+    return true; 
+  }else{
+    return false;
+  }
+  
+}
+
 int main(int argc, char** argv) {
 
     readData(argc, argv, &dimension, &matrizAdj);
@@ -251,6 +295,10 @@ int main(int argc, char** argv) {
     bestImprovementSwap(sequencia, custo);
 
     bestImprovement2Opt(sequencia, custo);
+
+    bestImprovementReinsertion(sequencia, custo);
+
+
 
     return 0; 
 
