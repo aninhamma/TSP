@@ -6,6 +6,16 @@
         "array": "cpp",
         "unordered_map": "cpp",
         "string_view": "cpp",
-        "initializer_list": "cpp"
+        "initializer_list": "cpp",
+        "*.tcc": "cpp",
+        "memory": "cpp",
+        "optional": "cpp",
+        "fstream": "cpp",
+        "istream": "cpp",
+        "ostream": "cpp",
+        "sstream": "cpp",
+        "streambuf": "cpp",
+        "functional": "cpp",
+        "tuple": "cpp"
     }
 }
