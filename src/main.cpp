@@ -97,7 +97,7 @@ double calculateSwapCost(int i, int j, vector <int> &sequencia){ //i e j sao cid
   double parteDaSeqInicial = -(matrizAdj[sequencia[i]][sequencia[i + 1]] + matrizAdj[sequencia[i]][sequencia[i - 1]] +
                               matrizAdj[sequencia[j]][sequencia[j + 1]] + matrizAdj[sequencia[j]][sequencia[j - 1]]);//parte da sequencia inicial que sera retirada quando as cidades trocadas nao forem vizinhas
 
-  if(j = i + 1){ //para quando as cidades trocadas forem vizinhas
+  if(j == i + 1){ //para quando as cidades trocadas forem vizinhas
     delta = -matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[j]][sequencia[j + 1]] + 
             matrizAdj[sequencia[i - 1]][sequencia[j]] + matrizAdj[sequencia[i]][sequencia[j + 1]];
   }else{
@@ -144,9 +144,6 @@ bool bestImprovementSwap(vector <int> &sequencia, double custo){
     cout << "custo antes da troca: " << custo << endl;
     custo = custo + delta;
     cout << "custo apos a troca: " << custo << endl; 
-    //custoTeste = custoDaSolucao(sequencia);
-    //cout << "Custo teste swap: " << custoTeste << endl; 
-
     return true; 
   }else{
     return false;
@@ -165,10 +162,24 @@ double calculate2OptCost(int i, int j, vector<int> &sequencia){
 bool bestImprovement2Opt(vector <int> &sequencia, double custo){
   double delta;
   double bestDelta = 0; 
+  double custoTeste;
+  vector<int> copia = sequencia;
+
   int best_i = 0, best_j = 0;
   for(int i = 1; i < sequencia.size() - 1; i++){
     for(int j = i + 1; j < sequencia.size() - 1; j++){
+      reverse(copia.begin() + i, copia.begin() + j + 1);
+
       delta = calculate2OptCost(i, j, sequencia);
+      custoTeste = custoDaSolucao(copia);
+
+      if(custo + delta == custoTeste){
+        cout << custo + delta << endl;
+        cout << custoTeste << endl;
+        cout << "i: " << i << "j: " << j << endl;
+      }
+
+      copia = sequencia;
 
         if(delta < bestDelta){
           bestDelta = delta;  
@@ -180,7 +191,7 @@ bool bestImprovement2Opt(vector <int> &sequencia, double custo){
   }
 
   if(bestDelta < 0){
-    reverse(sequencia.begin() + best_i, sequencia.begin() + best_j);
+    reverse(sequencia.begin() + best_i, sequencia.begin() + best_j + 1);
     cout << "custo antes do 2opt: " << custo << endl;
     custo = custo + bestDelta;
     cout << "custo apos o 2opt: " << custo << endl;
@@ -195,9 +206,9 @@ double calculateReinsertionCost(int i, int j, vector<int> &sequencia){
   double delta;
 
   if(i < j){
-    delta = matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[i]][sequencia[i + 1]] - matrizAdj[sequencia[j]][sequencia[j + 1]] + matrizAdj[sequencia[i]][sequencia[j]] + matrizAdj[sequencia[i]][sequencia[j + 1]] + matrizAdj[sequencia[i - 1]][sequencia[j - 1]];
+    delta = -matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[i]][sequencia[i + 1]] - matrizAdj[sequencia[j]][sequencia[j + 1]] + matrizAdj[sequencia[i]][sequencia[j]] + matrizAdj[sequencia[i]][sequencia[j + 1]] + matrizAdj[sequencia[i - 1]][sequencia[i + 1]];
   }else{
-    delta = matrizAdj[sequencia[j]][sequencia[j + 1]] - matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[i]][sequencia[i + 1]] + matrizAdj[sequencia[i]][sequencia[j]] + matrizAdj[sequencia[i - 1]][sequencia[i + 1]] + matrizAdj[sequencia[j - 1]][sequencia[i]];
+    delta = -matrizAdj[sequencia[j]][sequencia[j + 1]] - matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[i]][sequencia[i + 1]] + matrizAdj[sequencia[i]][sequencia[j]] + matrizAdj[sequencia[i - 1]][sequencia[i + 1]] + matrizAdj[sequencia[j - 1]][sequencia[i]];
   }
   return delta;
 }
@@ -206,12 +217,30 @@ double calculateReinsertionCost(int i, int j, vector<int> &sequencia){
 bool bestImprovementReinsertion(vector <int> &sequencia, double custo){
   double delta;
   double bestDelta = 0;
+  double custoTeste;
+  vector<int> copia = sequencia;
+
   int best_i = 0, best_j = 0;
   for(int i = 1; i < sequencia.size() - 1; i++){
     for(int j = 1; j < sequencia.size() - 1; j++){
+      //copia.erase(copia.begin() + i);
+      //copia.insert(copia.begin() + j, copia[i]);
+      //custoTeste = custoDaSolucao(copia);
       if(i != j){
+        copia.erase(copia.begin() + i);
+        copia.insert(copia.begin() + j, copia[i]);
         delta = calculateReinsertionCost(i, j, sequencia);
+        custoTeste = custoDaSolucao(copia);
       }
+
+      if(custo + delta == custoTeste){
+        cout << custo + delta << endl;
+        cout << custoTeste << endl;
+        cout << "i: " << i << "j: " << j << endl;
+      }
+
+      copia = sequencia;
+
       //cout << "Delta: " << delta << endl;
       
         if(delta < bestDelta){
@@ -250,13 +279,29 @@ double calculateOrOpt2Cost(int i, int j, vector<int> &sequencia){
 bool bestImprovementOrOpt2(vector <int> &sequencia, double custo){
   double delta;
   double bestDelta = 0;
+  double custoTeste;
+  vector<int> copia = sequencia;
+
   int best_i = 0, best_j = 0;
   for(int i = 1; i < sequencia.size() - 1; i++){
     for(int j = 1; j < sequencia.size() - 1; j++){
+      //copia.erase(copia.begin() + i, copia.begin() + i + 2);
+      //copia.insert(copia.begin() + j, copia[i], copia[i] + 2);
       if(i != j){
+        copia.erase(copia.begin() + i, copia.begin() + i + 2);
+        copia.insert(copia.begin() + j, copia[i], copia[i] + 2);
         delta = calculateOrOpt2Cost(i, j, sequencia);
+        //custoTeste = custoDaSolucao(copia);
       }
-      //cout << "Delta: " << delta << endl;
+      custoTeste = custoDaSolucao(copia);
+
+      if(custo + delta == custoTeste){
+        cout << custo + delta << endl;
+        cout << custoTeste << endl;
+        cout << "i: " << i << "j: " << j << endl;
+      }
+
+      copia = sequencia;
       
         if(delta < bestDelta){
           bestDelta = delta;
@@ -264,8 +309,10 @@ bool bestImprovementOrOpt2(vector <int> &sequencia, double custo){
           best_j = j;
         }
     }
+    cout << "Teste" << endl;
   }
-
+  cout << "Teste 2" << endl;
+  
   if(bestDelta < 0){
     sequencia.erase(sequencia.begin() + best_i, sequencia.begin() + best_i + 2);
     sequencia.insert(sequencia.begin() + best_j, sequencia[best_i], sequencia[best_i] + 2);
@@ -293,13 +340,27 @@ double calculateOrOpt3Cost(int i, int j, vector<int> &sequencia){
 bool bestImprovementOrOpt3(vector <int> &sequencia, double custo){
   double delta;
   double bestDelta = 0;
+  double custoTeste;
+  vector<int> copia = sequencia;
+
   int best_i = 0, best_j = 0;
   for(int i = 1; i < sequencia.size() - 1; i++){
     for(int j = 1; j < sequencia.size() - 1; j++){ 
+
       if(i != j){
+        copia.erase(copia.begin() + best_i, copia.begin() + best_i + 3);
+        sequencia.insert(copia.begin() + best_j, copia[best_i], copia[best_i] + 3);
         delta = calculateOrOpt3Cost(i, j, sequencia); 
       }
-      //cout << "Delta: " << delta << endl;
+      custoTeste = custoDaSolucao(copia);
+       
+      if(custo + delta == custoTeste){
+        cout << custo + delta << endl;
+        cout << custoTeste << endl;
+        cout << "i: " << i << "j: " << j << endl;
+      }
+
+      copia = sequencia;
       
         if(delta < bestDelta){
           bestDelta = delta;
@@ -424,78 +485,26 @@ int main(int argc, char** argv) {
 
     cout << "custo da solucao inicial: " << custo << endl;
 
-    vector<int> seqTeste = {1,2,3,4,5,6,7,8,9,10,11,12,13,14};
-
-    vector<int> seqTeste2 = {1,2,3,4,9,6,7,8,5,10,11,12,13,14};
-
-    double custo1, custoPri;
-    double deltaTeste;
-
-    int k = 4;
-    int l = 8;
-
-
-    custoPri = custoDaSolucao(seqTeste);
-
-    deltaTeste = calculateSwapCost(k, l, seqTeste);
-
-    swap(seqTeste[k], seqTeste[l]);
-
-    custo1 = custoDaSolucao(seqTeste);
-
-    cout << "delta real: " << custoPri - custo1 << endl;
-
-    double deltaTeste2 = calculateSwapCost(k, l, seqTeste);
-
-    cout << "delta test 2: " << deltaTeste2 << endl;
-
-    double deltaNovo = MatrizAdj[seqTeste[k]] [seqTeste[l + 1]] + matrizAdj[seqTeste[k]][seqTeste[l - 1]] + matrizAdj[seqTeste[l]][seqTeste[k - 1]]
-
-
     
-
-
-
-
-    
-    cout << "Custo primeiro: " << custoPri << endl;
-    cout << "Custo 1: " << custo1 << endl;
-    cout << "delta teste: " << deltaTest << endl;
-
 
 
     //.......................Busca local......................//
 
     //best = sequencia; //solucao melhorada recebe a solucao inicial  
 
-   /* vector<int> copia = sequencia;
-    double custoTeste; 
-    double delta;
-
-    for(int i = 1; i < copia.size() - 1; i++){
-      for(int j = i + 1; j < copia.size() - 1; j++){
-
-        swap(copia[i], copia[j]);
-
-        custoTeste = custoDaSolucao(copia);
-
-        cout << "Custo teste swap: " << custoTeste << endl;
-
-        copia = sequencia;
-      }
-    }*/
+   
 
 
 
-    /*bestImprovementSwap(sequencia, custo);
+    //bestImprovementSwap(sequencia, custo);
 
-    bestImprovement2Opt(sequencia, custo); 
+    //bestImprovement2Opt(sequencia, custo); 
 
     bestImprovementReinsertion(sequencia, custo);
 
-    bestImprovementOrOpt2(sequencia, custo);
+    //bestImprovementOrOpt2(sequencia, custo);
 
-    bestImprovementOrOpt3(sequencia, custo);*/
+    //bestImprovementOrOpt3(sequencia, custo);
 
     
 
