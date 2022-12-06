@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <cmath>
 
 using namespace std;
 
@@ -31,10 +32,6 @@ void escolher3NosAleatorios(vector <int> &sequencia, vector <int> &CL){//funcao 
   sequencia = {1,1};//inicilaizei a sequencia com a primeira cidade
 
   removeDaLista(CL, n);//remove o primeiro no inserido
-
-  unsigned seed = time(0);
-
-  srand(seed);
 
   for(i = 0; i < 3; i++){ //for para repetir o processo de escolha aleatoria para pegar tres nos
   
@@ -208,7 +205,7 @@ double calculateReinsertionCost(int i, int j, vector<int> &sequencia){
   if(i < j){
     delta = -matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[i]][sequencia[i + 1]] - matrizAdj[sequencia[j]][sequencia[j + 1]] + matrizAdj[sequencia[i]][sequencia[j]] + matrizAdj[sequencia[i]][sequencia[j + 1]] + matrizAdj[sequencia[i - 1]][sequencia[i + 1]];
   }else{
-    delta = -matrizAdj[sequencia[j]][sequencia[j + 1]] - matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[i]][sequencia[i + 1]] + matrizAdj[sequencia[i]][sequencia[j]] + matrizAdj[sequencia[i - 1]][sequencia[i + 1]] + matrizAdj[sequencia[j - 1]][sequencia[i]];
+    delta = -matrizAdj[sequencia[j]][sequencia[j - 1]] - matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[i]][sequencia[i + 1]] + matrizAdj[sequencia[i]][sequencia[j]] + matrizAdj[sequencia[i - 1]][sequencia[i + 1]] + matrizAdj[sequencia[j - 1]][sequencia[i]];
   }
   return delta;
 }
@@ -223,26 +220,23 @@ bool bestImprovementReinsertion(vector <int> &sequencia, double custo){
   int best_i = 0, best_j = 0;
   for(int i = 1; i < sequencia.size() - 1; i++){
     for(int j = 1; j < sequencia.size() - 1; j++){
-      //copia.erase(copia.begin() + i);
-      //copia.insert(copia.begin() + j, copia[i]);
-      //custoTeste = custoDaSolucao(copia);
+     
       if(i != j){
         copia.erase(copia.begin() + i);
-        copia.insert(copia.begin() + j, copia[i]);
+        copia.insert(copia.begin() + j, sequencia[i]);
         delta = calculateReinsertionCost(i, j, sequencia);
         custoTeste = custoDaSolucao(copia);
-      }
 
-      if(custo + delta == custoTeste){
-        cout << custo + delta << endl;
-        cout << custoTeste << endl;
-        cout << "i: " << i << "j: " << j << endl;
+        if(custo + delta == custoTeste){
+          cout << custo + delta << endl;
+          cout << custoTeste << endl;
+          cout << "i: " << i << "j: " << j << endl;
+        }
+
       }
 
       copia = sequencia;
 
-      //cout << "Delta: " << delta << endl;
-      
         if(delta < bestDelta){
           bestDelta = delta;
           best_i = i;
@@ -269,38 +263,48 @@ double calculateOrOpt2Cost(int i, int j, vector<int> &sequencia){
   double delta;
 
   if(i < j){
-    delta = matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[i + 1]][sequencia[i + 2]] - matrizAdj[sequencia[j]][sequencia[j + 1]] + matrizAdj[sequencia[j]][sequencia[i]] + matrizAdj[sequencia[i + 1]][sequencia[j + 1]] + matrizAdj[sequencia[i - 1]][sequencia[j]];
+    delta = -matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[i + 1]][sequencia[i + 2]] - matrizAdj[sequencia[j + 1]][sequencia[j + 2]] + matrizAdj[sequencia[i + 1]][sequencia[j + 2]] + matrizAdj[sequencia[i]][sequencia[j + 1]] + matrizAdj[sequencia[i - 1]][sequencia[i + 2]];
   }else{
-    delta = matrizAdj[sequencia[j - 1]][sequencia[j]] - matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[i + 1]][sequencia[i + 2]] + matrizAdj[sequencia[j - 1]][sequencia[i]] + matrizAdj[sequencia[i + 1]][sequencia[j]] + matrizAdj[sequencia[j + 1]][sequencia[i + 2]];
+    delta = -matrizAdj[sequencia[j - 1]][sequencia[j]] - matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[i + 1]][sequencia[i + 2]] + matrizAdj[sequencia[j - 1]][sequencia[i]] + matrizAdj[sequencia[i + 1]][sequencia[j]] + matrizAdj[sequencia[i - 1]][sequencia[i + 2]];
   }
-  return delta;
+  return delta; 
 }
 
 bool bestImprovementOrOpt2(vector <int> &sequencia, double custo){
   double delta;
-  double bestDelta = 0;
+  double bestDelta = 0; 
   double custoTeste;
   vector<int> copia = sequencia;
 
   int best_i = 0, best_j = 0;
-  for(int i = 1; i < sequencia.size() - 1; i++){
-    for(int j = 1; j < sequencia.size() - 1; j++){
-      //copia.erase(copia.begin() + i, copia.begin() + i + 2);
-      //copia.insert(copia.begin() + j, copia[i], copia[i] + 2);
+  //cout << "tamanho sequencia: " << sequencia.size() << endl;
+
+  for(int i = 1; i < sequencia.size() - 2; i++){
+    for(int j = 1; j < sequencia.size() - 3; j++){
+      //cout << "i: " << i << "j: " << j << endl;
+    
       if(i != j){
+        /*for(int k = 0; k < copia.size() - 1; k++){
+          cout << copia[k] << "->";
+        }
+          cout << copia.back() << endl;*/
+
         copia.erase(copia.begin() + i, copia.begin() + i + 2);
-        copia.insert(copia.begin() + j, copia[i], copia[i] + 2);
+        copia.insert(copia.begin() + j, &sequencia[i], &sequencia[i] + 2);
+        /*for(int k = 0; k < copia.size() - 1; k++){
+          cout << copia[k] << "->";
+        }
+          cout << copia.back() << endl;*/
         delta = calculateOrOpt2Cost(i, j, sequencia);
-        //custoTeste = custoDaSolucao(copia);
+        custoTeste = custoDaSolucao(copia);
+      
+        if(custo + delta != custoTeste){
+          cout << custo + delta << endl;
+          cout << "custo teste: " << custoTeste << endl;
+          cout << "i: " << i << "j: " << j << endl;
+        }
       }
-      custoTeste = custoDaSolucao(copia);
-
-      if(custo + delta == custoTeste){
-        cout << custo + delta << endl;
-        cout << custoTeste << endl;
-        cout << "i: " << i << "j: " << j << endl;
-      }
-
+      //cout << "Antes da copia" << endl;
       copia = sequencia;
       
         if(delta < bestDelta){
@@ -309,17 +313,17 @@ bool bestImprovementOrOpt2(vector <int> &sequencia, double custo){
           best_j = j;
         }
     }
-    cout << "Teste" << endl;
+    //cout << "Teste apos o primeiro for" << endl;
   }
-  cout << "Teste 2" << endl;
+  //cout << "Teste 2" << endl;
   
   if(bestDelta < 0){
-    sequencia.erase(sequencia.begin() + best_i, sequencia.begin() + best_i + 2);
-    sequencia.insert(sequencia.begin() + best_j, sequencia[best_i], sequencia[best_i] + 2);
+    sequencia.erase(sequencia.begin() + best_i, sequencia.begin() + best_i + 1);
+    sequencia.insert(sequencia.begin() + best_j, sequencia[best_i], sequencia[best_i] + 1);
     cout << "custo antes do Oropt2: " << custo << endl;
-    custo = custo + bestDelta;
+    custo = custo + bestDelta; 
     cout << "custo apos o Oropt2: " << custo << endl;
-    return true; 
+    return true;  
   }else{
     return false;
   }
@@ -330,9 +334,9 @@ double calculateOrOpt3Cost(int i, int j, vector<int> &sequencia){
   double delta;
 
   if(i < j){
-    delta = matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[i + 2]][sequencia[i + 3]] - matrizAdj[sequencia[j]][sequencia[j + 1]] + matrizAdj[sequencia[i - 1]][sequencia[j]] + matrizAdj[sequencia[j]][sequencia[i]] + matrizAdj[sequencia[j - 1]][sequencia[j + 1]];
+    delta = -matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[i + 2]][sequencia[i + 3]] - matrizAdj[sequencia[j + 2]][sequencia[j + 3]] + matrizAdj[sequencia[i - 1]][sequencia[i + 3]] + matrizAdj[sequencia[i]][sequencia[j + 2]] + matrizAdj[sequencia[i + 2]][sequencia[j + 3]];
   }else{
-    delta = matrizAdj[sequencia[j - 1]][sequencia[j]] - matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[i + 2]][sequencia[i + 3]] + matrizAdj[sequencia[j - 1]][sequencia[i]] + matrizAdj[sequencia[i + 2]][sequencia[j]] + matrizAdj[sequencia[j + 1]][sequencia[i + 3]];
+    delta = -matrizAdj[sequencia[j - 1]][sequencia[j]] - matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[i + 2]][sequencia[i + 3]] + matrizAdj[sequencia[j - 1]][sequencia[i]] + matrizAdj[sequencia[i + 2]][sequencia[j]] + matrizAdj[sequencia[i - 1]][sequencia[i + 3]];
   }
   return delta;
 }
@@ -344,29 +348,31 @@ bool bestImprovementOrOpt3(vector <int> &sequencia, double custo){
   vector<int> copia = sequencia;
 
   int best_i = 0, best_j = 0;
-  for(int i = 1; i < sequencia.size() - 1; i++){
-    for(int j = 1; j < sequencia.size() - 1; j++){ 
+  //cout << "inicio" << endl;
+  for(int i = 1; i < sequencia.size() - 3; i++){
+    for(int j = 1; j < sequencia.size() - 4; j++){ 
 
       if(i != j){
-        copia.erase(copia.begin() + best_i, copia.begin() + best_i + 3);
-        sequencia.insert(copia.begin() + best_j, copia[best_i], copia[best_i] + 3);
+        copia.erase(copia.begin() + i, copia.begin() + i + 3);
+        copia.insert(copia.begin() + j, &sequencia[i], &sequencia[i] + 3);
         delta = calculateOrOpt3Cost(i, j, sequencia); 
-      }
-      custoTeste = custoDaSolucao(copia);
+      
+        custoTeste = custoDaSolucao(copia);
        
-      if(custo + delta == custoTeste){
-        cout << custo + delta << endl;
-        cout << custoTeste << endl;
-        cout << "i: " << i << "j: " << j << endl;
-      }
+        if(custo + delta != custoTeste){
+          cout << custo + delta << endl;
+          cout << custoTeste << endl;
+          cout << "i: " << i << "j: " << j << endl;
+        }
 
-      copia = sequencia;
+        copia = sequencia;
       
         if(delta < bestDelta){
           bestDelta = delta;
           best_i = i;
           best_j = j;
         }
+      }
     }
   }
 
@@ -420,6 +426,10 @@ int main(int argc, char** argv) {
 
     readData(argc, argv, &dimension, &matrizAdj);
     printData();  
+    
+    unsigned seed = time(0);
+    cout << seed << endl;
+    srand (1669752966);
 
     vector <int> CL;
     vector <int> sequencia;//primeira solucao
@@ -451,18 +461,26 @@ int main(int argc, char** argv) {
 
     double alpha = (double) rand() / RAND_MAX;
 
+    cout << alpha << endl;
+
     vector<InsertionInfo> custoInsercao = calcularCustoInsercao(sequencia, CL);
 
     while(!CL.empty()){
-    
+
       ordenarEmOrdemCrescente(custoInsercao);
 
-      int custoS = (int)(alpha * custoInsercao.size());
+      int custoS = (int)(ceil (alpha * custoInsercao.size()));
+
+      cout << custoInsercao.size() << endl;
+
+      cout << custoS << endl;
 
       int selecionado = rand() % custoS;
 
+      cout << selecionado << endl;
+
       InserirNaSolucao(sequencia, custoInsercao[selecionado].noInserido, custoInsercao[selecionado].arestaRemovida); 
-    
+
       for(int i = 0; i < CL.size(); i++){
         int k = custoInsercao[selecionado].noInserido;
         if(CL[i] == k){
@@ -500,11 +518,11 @@ int main(int argc, char** argv) {
 
     //bestImprovement2Opt(sequencia, custo); 
 
-    bestImprovementReinsertion(sequencia, custo);
+    //bestImprovementOrOpt2(sequencia, custo); 
 
-    //bestImprovementOrOpt2(sequencia, custo);
+    bestImprovementOrOpt3(sequencia, custo);
 
-    //bestImprovementOrOpt3(sequencia, custo);
+    //bestImprovementReinsertion(sequencia, custo);
 
     
 
