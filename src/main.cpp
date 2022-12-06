@@ -18,6 +18,12 @@ struct InsertionInfo{
   double custo; // delta
 };
 
+void printSolucao(vector<int> sequencia){
+  for(int i = 0; i < sequencia.size() - 1; i++) 
+    cout << sequencia[i] << "->";
+    cout << sequencia.back() << endl;
+}
+
 void removeDaLista (vector <int> &CL, int n){//funcao que remove o no inserido da lista de candidatos
   
   CL.erase(CL.begin() + n); 
@@ -88,6 +94,73 @@ double custoDaSolucao(vector<int> &sequencia){
   return custo;
 }
 
+vector<int> construcao(){
+  vector <int> CL;
+  vector <int> sequencia;//primeira solucao
+  //vector <int> best;//solucao melhorada
+  int i;
+  double custo = 0;
+
+  for(i = 0; i < dimension; i++){
+    CL.push_back(i+1);
+  }
+
+  //cout << "Lista de candidatos: " << endl;
+
+  //printSolucao(CL);
+
+  escolher3NosAleatorios(sequencia, CL);
+
+  //cout << "Tres cidades iniciais: " << endl;
+
+  //printSolucao(sequencia);
+    
+  double alpha = (double) rand() / RAND_MAX;
+
+  //cout << alpha << endl;
+
+  vector<InsertionInfo> custoInsercao = calcularCustoInsercao(sequencia, CL);
+
+  while(!CL.empty()){
+
+    ordenarEmOrdemCrescente(custoInsercao);
+
+    int custoS = (int)(ceil (alpha * custoInsercao.size()));
+
+    //cout << custoInsercao.size() << endl;
+
+    //cout << custoS << endl;
+
+    int selecionado = rand() % custoS;
+
+    //cout << selecionado << endl;
+
+    InserirNaSolucao(sequencia, custoInsercao[selecionado].noInserido, custoInsercao[selecionado].arestaRemovida); 
+
+    for(int i = 0; i < CL.size(); i++){
+      int k = custoInsercao[selecionado].noInserido;
+      if(CL[i] == k){
+        removeDaLista(CL, i);
+      }
+    }
+
+    custoInsercao = calcularCustoInsercao(sequencia, CL);
+
+
+  }
+
+  //cout << "Solucao inicial: " << endl; 
+
+  //printSolucao(sequencia);
+
+  custo = custoDaSolucao(sequencia);
+
+  //cout << "custo da solucao inicial: " << custo << endl;
+
+  return sequencia;
+  
+}
+
 double calculateSwapCost(int i, int j, vector <int> &sequencia){ //i e j sao cidades que serao trocadas
   double delta;
 
@@ -119,7 +192,7 @@ bool bestImprovementSwap(vector <int> &sequencia, double custo){
       delta = calculateSwapCost(i, j, sequencia); 
       custoTeste = custoDaSolucao(copia);
 
-      if(custo + delta == custoTeste){
+      if(custo + delta != custoTeste){
         cout << custo + delta << endl;
         cout << custoTeste << endl;
         cout << "i: " << i << "j: " << j << endl;
@@ -170,7 +243,7 @@ bool bestImprovement2Opt(vector <int> &sequencia, double custo){
       delta = calculate2OptCost(i, j, sequencia);
       custoTeste = custoDaSolucao(copia);
 
-      if(custo + delta == custoTeste){
+      if(custo + delta != custoTeste){
         cout << custo + delta << endl;
         cout << custoTeste << endl;
         cout << "i: " << i << "j: " << j << endl;
@@ -227,7 +300,7 @@ bool bestImprovementReinsertion(vector <int> &sequencia, double custo){
         delta = calculateReinsertionCost(i, j, sequencia);
         custoTeste = custoDaSolucao(copia);
 
-        if(custo + delta == custoTeste){
+        if(custo + delta != custoTeste){
           cout << custo + delta << endl;
           cout << custoTeste << endl;
           cout << "i: " << i << "j: " << j << endl;
@@ -345,6 +418,7 @@ bool bestImprovementOrOpt3(vector <int> &sequencia, double custo){
   double delta;
   double bestDelta = 0;
   double custoTeste;
+  double custoAntes = custo;
   vector<int> copia = sequencia;
 
   int best_i = 0, best_j = 0;
@@ -383,6 +457,7 @@ bool bestImprovementOrOpt3(vector <int> &sequencia, double custo){
     cout << "custo antes do Oropt3: " << custo << endl;
     custo = custo + bestDelta;
     cout << "custo apos o Oropt3: " << custo << endl;
+
     return true; 
   }else{
     return false;
@@ -390,21 +465,25 @@ bool bestImprovementOrOpt3(vector <int> &sequencia, double custo){
   
 }
 
-/*void buscaLocal(vector<int> &sequencia; double &custo){
+void buscaLocal(vector<int> &sequencia, double custo){
   vector<int> NL = {1, 2, 3, 4, 5};
   bool improved = false;
+  double custoAlt = custo;
 
   while(NL.empty() == false){
     int n = rand() % NL.size();
     switch (NL[n]){
       case 1:
-        improved = bestImprovementSwap(sequencia, custo);
-        break;
+        bestImprovementSwap(sequencia, custoAlt);
+        if(custoAlt < custo){
+          improved = bestImprovementSwap(sequencia, custo);
+        }
+        break; 
       case 2:
         improved = bestImprovement2Opt(sequencia, custo);
         break;
       case 3:
-        improved = bestImprovemenReinsertion(sequencia, custo);
+        improved = bestImprovementReinsertion(sequencia, custo);
         break;
       case 4:
         improved = bestImprovementOrOpt2(sequencia, custo);
@@ -420,99 +499,56 @@ bool bestImprovementOrOpt3(vector <int> &sequencia, double custo){
       NL.erase(NL.begin() + n);
     }
   }
-}*/
+}
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv){
 
     readData(argc, argv, &dimension, &matrizAdj);
     printData();  
+
+    vector<int> sequencia, best, bestOfAll;
+    double custo = 0;
+    double custoBest;
+    double custoBestOfAll = INFINITY;
+    int maxIter = 50;
+    int maxIterILS;
+
+    if(dimension >= 150){
+      maxIterILS = dimension / 2.0;
+    }else{
+      maxIterILS = dimension;
+    }
+
     
     unsigned seed = time(0);
     cout << seed << endl;
     srand (1669752966);
 
-    vector <int> CL;
-    vector <int> sequencia;//primeira solucao
-    vector <int> best;//solucao melhorada
-    int i;
-    double custo = 0;
+    for(int i = 0; i < maxIter; i++){
 
-    for(i = 0; i < dimension; i++){
-      CL.push_back(i+1);
-    }
+      sequencia = construcao();
+      best = sequencia;
 
-    cout << "Lista de candidatos: " << endl;
+      cout << "solucao inicial: " << endl; 
 
-    for (i = 0; i < CL.size() - 1; i++) {
-      cout << CL[i] << "->";
-    }
-    cout << CL.back() << endl;
+      printSolucao(sequencia);
 
-    escolher3NosAleatorios(sequencia, CL);
+      custo = custoDaSolucao(sequencia);
+      custoBest = custo;
 
-    cout << "Tres cidades iniciais: " << endl;
+      cout << "custo da solucao inicial: " << custo << endl;
 
-    for(i = 0; i < sequencia.size() - 1; i++){
-      cout << sequencia[i] << "->";
-    }
-      cout << sequencia.back() << endl;
-    
-    
+      int iterILS = 0;
 
-    double alpha = (double) rand() / RAND_MAX;
-
-    cout << alpha << endl;
-
-    vector<InsertionInfo> custoInsercao = calcularCustoInsercao(sequencia, CL);
-
-    while(!CL.empty()){
-
-      ordenarEmOrdemCrescente(custoInsercao);
-
-      int custoS = (int)(ceil (alpha * custoInsercao.size()));
-
-      cout << custoInsercao.size() << endl;
-
-      cout << custoS << endl;
-
-      int selecionado = rand() % custoS;
-
-      cout << selecionado << endl;
-
-      InserirNaSolucao(sequencia, custoInsercao[selecionado].noInserido, custoInsercao[selecionado].arestaRemovida); 
-
-      for(int i = 0; i < CL.size(); i++){
-        int k = custoInsercao[selecionado].noInserido;
-        if(CL[i] == k){
-          removeDaLista(CL, i);
+      while(iterILS <= maxIterILS){
+        buscaLocal(sequencia, custo);
+        if(custo < custoBest){
+          best = sequencia;
+          printSolucao(best);
+          iterILS = 0;
         }
       }
-
-      custoInsercao = calcularCustoInsercao(sequencia, CL);
-
-
-    }
-
-    cout << "Solucao inicial: " << endl; 
-
-    for(i = 0; i < sequencia.size() - 1; i++) 
-      cout << sequencia[i] << "->";
-      cout << sequencia.back() << endl;
-
-    custo = custoDaSolucao(sequencia);
-
-    cout << "custo da solucao inicial: " << custo << endl;
-
     
-
-
-    //.......................Busca local......................//
-
-    //best = sequencia; //solucao melhorada recebe a solucao inicial  
-
-   
-
-
 
     //bestImprovementSwap(sequencia, custo);
 
@@ -520,13 +556,13 @@ int main(int argc, char** argv) {
 
     //bestImprovementOrOpt2(sequencia, custo); 
 
-    bestImprovementOrOpt3(sequencia, custo);
+    //bestImprovementOrOpt3(sequencia, custo);
 
     //bestImprovementReinsertion(sequencia, custo);
 
     
 
-
+   }
 
 
     return 0; 
