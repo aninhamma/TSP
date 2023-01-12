@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
+#include <random>
 
 using namespace std;
 
@@ -22,6 +23,15 @@ void printSolucao(vector<int> sequencia){
   for(int i = 0; i < sequencia.size() - 1; i++) 
     cout << sequencia[i] << "->";
     cout << sequencia.back() << endl;
+}
+
+int random(int low, int high){
+  int valorRetorno = low + rand() % (high - low + 1);
+  //cout << "low: " << low << endl;
+  //cout << "high: " << high << endl;
+
+  return valorRetorno;
+
 }
 
 void removeDaLista (vector <int> &CL, int n){//funcao que remove o no inserido da lista de candidatos
@@ -94,7 +104,7 @@ double custoDaSolucao(vector<int> &sequencia){
   return custo;
 }
 
-vector<int> construcao(){
+vector<int> construcao(double alpha){
   vector <int> CL;
   vector <int> sequencia;//primeira solucao
   //vector <int> best;//solucao melhorada
@@ -114,8 +124,6 @@ vector<int> construcao(){
   //cout << "Tres cidades iniciais: " << endl;
 
   //printSolucao(sequencia);
-    
-  double alpha = (double) rand() / RAND_MAX;
 
   //cout << alpha << endl;
 
@@ -187,7 +195,7 @@ bool bestImprovementSwap(vector <int> &sequencia, double &custo){
   int best_i = 0, best_j = 0;
   for(int i = 1; i < sequencia.size() - 1; i++){
     for(int j = i + 1; j < sequencia.size() - 1; j++){
-      swap(copia[i], copia[j]);
+      //swap(copia[i], copia[j]);
 
       delta = calculateSwapCost(i, j, sequencia); 
       //custoTeste = custoDaSolucao(copia);
@@ -211,9 +219,9 @@ bool bestImprovementSwap(vector <int> &sequencia, double &custo){
 
   if(bestDelta < 0){
     swap(sequencia[best_i], sequencia[best_j]);
-    cout << "custo antes da troca: " << custo << endl;
+    //cout << "custo antes da troca: " << custo << endl;
     custo = custo + delta;
-    cout << "custo apos a troca: " << custo << endl; 
+    //cout << "custo apos a troca: " << custo << endl; 
     return true; 
   }else{
     return false;
@@ -262,9 +270,9 @@ bool bestImprovement2Opt(vector <int> &sequencia, double &custo){
 
   if(bestDelta < 0){
     reverse(sequencia.begin() + best_i, sequencia.begin() + best_j + 1);
-    cout << "custo antes do 2opt: " << custo << endl;
+    //cout << "custo antes do 2opt: " << custo << endl;
     custo = custo + bestDelta;
-    cout << "custo apos o 2opt: " << custo << endl;
+    //cout << "custo apos o 2opt: " << custo << endl;
     return true; 
   }else{
     return false;
@@ -296,9 +304,9 @@ bool bestImprovementReinsertion(vector <int> &sequencia, double &custo){
      
       if(i != j){
         /*copia.erase(copia.begin() + i);
-        copia.insert(copia.begin() + j, sequencia[i]);
+        copia.insert(copia.begin() + j, sequencia[i]);*/
         delta = calculateReinsertionCost(i, j, sequencia);
-        custoTeste = custoDaSolucao(copia);*/
+        //custoTeste = custoDaSolucao(copia);
 
         /*if(custo + delta != custoTeste){
           cout << custo + delta << endl;
@@ -320,11 +328,11 @@ bool bestImprovementReinsertion(vector <int> &sequencia, double &custo){
 
   if(bestDelta < 0){
     sequencia.erase(sequencia.begin() + best_i);
-    sequencia.insert(sequencia.begin() + best_j, sequencia[best_i]);
+    sequencia.insert(sequencia.begin() + best_j, copia[best_i]);
 
-    cout << "custo antes do reinsertion: " << custo << endl;
+    //cout << "custo antes do reinsertion: " << custo << endl;
     custo = custo + bestDelta;
-    cout << "custo apos o reinsertion: " << custo << endl;
+    //cout << "custo apos o reinsertion: " << custo << endl;
     return true; 
   }else{
     return false;
@@ -392,10 +400,10 @@ bool bestImprovementOrOpt2(vector <int> &sequencia, double &custo){
   
   if(bestDelta < 0){
     sequencia.erase(sequencia.begin() + best_i, sequencia.begin() + best_i + 2);
-    sequencia.insert(sequencia.begin() + best_j, &sequencia[best_i], &sequencia[best_i] + 2);
-    cout << "custo antes do Oropt2: " << custo << endl;
+    sequencia.insert(sequencia.begin() + best_j, &copia[best_i], &copia[best_i] + 2);
+    //cout << "custo antes do Oropt2: " << custo << endl;
     custo = custo + bestDelta; 
-    cout << "custo apos o Oropt2: " << custo << endl;
+    //cout << "custo apos o Oropt2: " << custo << endl;
     return true;  
   }else{
     return false;
@@ -428,8 +436,8 @@ bool bestImprovementOrOpt3(vector <int> &sequencia, double &custo){
 
       if(i != j){
         /*copia.erase(copia.begin() + i, copia.begin() + i + 3);
-        copia.insert(copia.begin() + j, &sequencia[i], &sequencia[i] + 3);
-        delta = calculateOrOpt3Cost(i, j, sequencia); */
+        copia.insert(copia.begin() + j, &sequencia[i], &sequencia[i] + 3);*/
+        delta = calculateOrOpt3Cost(i, j, sequencia); 
       
         //custoTeste = custoDaSolucao(copia);
        
@@ -452,11 +460,11 @@ bool bestImprovementOrOpt3(vector <int> &sequencia, double &custo){
 
   if(bestDelta < 0){
     sequencia.erase(sequencia.begin() + best_i, sequencia.begin() + best_i + 3);
-    sequencia.insert(sequencia.begin() + best_j, &sequencia[best_i], &sequencia[best_i] + 3);
+    sequencia.insert(sequencia.begin() + best_j, &copia[best_i], &copia[best_i] + 3);
 
-    cout << "custo antes do Oropt3: " << custo << endl;
+    //cout << "custo antes do Oropt3: " << custo << endl;
     custo = custo + bestDelta;
-    cout << "custo apos o Oropt3: " << custo << endl;
+    //cout << "custo apos o Oropt3: " << custo << endl;
 
     return true; 
   }else{
@@ -498,132 +506,193 @@ void buscaLocal(vector<int> &sequencia, double &custo){
 }
 
 vector<int> perturbacao(vector<int> &sequencia){
-  int tamMaxSubSeq;
+  int tamMaxSubSeq = ceil(((double)dimension)/10);
+  //cout << "tam max: " << tamMaxSubSeq << endl;
   int indice1, indice2;
-
-  /*if(dimension <= 29){
-    tamMaxSubSeq = 2;
-    indice1 = rand() % (dimension);
-    indice2 = rand() % (dimension);
-
-    if(indice2 != indice1 && indice2 != indice1 + 1 && indice2 != dimension){//verifica se o indice1 nao eh igual ao indice2, se tambem nao eh igual ao vizinho do indice1
-      sequencia.erase(sequencia.begin() + indice1, sequencia.begin() + indice1 + 1);
-      sequencia.erase(sequencia.begin() + indice2, sequencia.begin() + indice2 + 1);
-      sequencia.insert(sequencia.begin() + indice2, sequencia[indice1], sequencia[indice1] + 1);
-      sequencia.insert(sequencia.begin() + indice1, sequencia[indice2], sequencia[indice2] + 1);
-    }
-    //indice2 = rand() % (dimension - indice1 - (indice1 + 1))
-  }else{*/
-    int tam1, tam2, indicefinal1,indicefinal2;
-  
-    tamMaxSubSeq = ceil(dimension / 10);
-
-    if(dimension <= 29){ //ate 29 as subsequencias so podem ter tamanho 2
-      tam1 = 2;
-      tam2 = 2;
-    }else{
-      tam1 = rand() % (tamMaxSubSeq);
-      tam2 = rand() % (tamMaxSubSeq);
-    }
+  int tam1, tam2, indiceFinal1,indiceFinal2;
+  int tamEntreSub; //tamanho entre subsequencias
+  vector<int> copia = sequencia;
     
-    indice1 = rand() % (dimension); 
-    indice2 = rand() % (dimension) + indice1 + tam1; //sorteia o indice 2 a partir do final da subsequencia 1
+    indice1 = random(1, dimension - tamMaxSubSeq - tamMaxSubSeq - 1);
+    //cout << "apos random 1" << endl;
+    indiceFinal1 = random(indice1 + 1, indice1 + tamMaxSubSeq - 1);//+1 para que o indice final nao seja igual ao inicial
+    //cout << "apos random 2" << endl;
+    indice2 = random(indiceFinal1 + 1, dimension - tamMaxSubSeq);
+    //cout << "apos random 3" << endl;
+    indiceFinal2 = random(indice2 + 1, indice2 + tamMaxSubSeq - 1);
+    //cout << "apos random 4" << endl;
 
-    indicefinal1 = indice1 + tam1; 
-    indicefinal2 = indice2 + tam2;
+    vector<int> subSeq1(copia.begin() + indice1, copia.begin() + indiceFinal1);//cria subsequencia 1 a partir do indice inicial e final 1
+    vector<int> subSeq2(copia.begin() + indice2, copia.begin() + indiceFinal2);//cria subsequencia 2 a partir do indice inicial e final 2
 
-    cout << "indice1: " << indice1 << endl;
-    cout << "indice2: " << indice2 << endl;
+    //cout << "subSeq1: " << endl;
+    //printSolucao(subSeq1);
+    //cout << "subSeq2: " << endl;
+    //printSolucao(subSeq2);
 
-   /* if(indice2 != indice1 && indice2 > indice1 + tam1){ 
-      sequencia.erase(sequencia.begin() + indice1, sequencia.begin() + indice1 + tam1);
-      sequencia.erase(sequencia.begin() + indice2, sequencia.begin() + indice2 + tam2);
-      sequencia.insert(sequencia.begin() + indice2, sequencia[indice1], sequencia[indicefinal1]);
-      sequencia.insert(sequencia.begin() + indice1, sequencia[indice2], sequencia[indicefinal2]);
-    }*/
-      
-    
+    tamEntreSub = indice2 - indiceFinal1;
+    tam1 = indiceFinal1 - indice1;
+    tam2 = indiceFinal2 - indice2;
+
+    //cout << "tam entre subsequencias: " << tamEntreSub << endl;
+    //cout << "tam1: " << tam1 << endl;
+    //cout << "tam2: " << tam2 << endl;
+
+    copia.erase(copia.begin() + indice1, copia.begin() + indiceFinal1);//apaga a subsequencia 1
+    copia.insert(copia.begin() + indice1, subSeq2.begin(), subSeq2.end());//insere a subsequencia 2 na posicao do indice 1
+    //cout << "solucao antes do erase" << endl;
+    //printSolucao(copia);
+    copia.erase(copia.begin() + indice1 + tam2 + tamEntreSub, copia.begin() + indice1 + tam2 + tamEntreSub + tam2);
+    //cout << "solucao depois do erase" << endl;
+    //printSolucao(copia);
+    copia.insert(copia.begin() + indice1 + tam2 + tamEntreSub, subSeq1.begin(), subSeq1.end());
+    //cout << "solucao apos insert" << endl;
+    //printSolucao(copia);
+
+    //cout << "Solucao apos perturbacao: " << endl;
+    //printSolucao(copia);
+
   
-  return sequencia; 
+  return copia; 
 }
 
 int main(int argc, char** argv){
 
-    readData(argc, argv, &dimension, &matrizAdj);
-    printData();  
+  readData(argc, argv, &dimension, &matrizAdj);
+  printData();  
 
-    vector<int> sequencia, best, bestOfAll;
-    double custo = 0;
-    double custoBest;
-    double custoBestOfAll = INFINITY;
-    int maxIter = 50;
-    int maxIterILS;
+  //vector<int> seqTeste = {1,14,5,4,8,7,13,6,12,3,10,2,11,9,1};
 
-    if(dimension >= 150){
-      maxIterILS = dimension / 2.0;
-    }else{
-      maxIterILS = dimension;
-    }
+  /*int tamMaxSubSeq, tamMinSubSeq = 2;
+  int indice1, indice2;
+  int tam1, tam2, indiceFinal1,indiceFinal2;
+  int tamEntreSub; //tam entre a subsequencia1 e a subsequencia 2
+    
+    indice1 = 1;
+    indiceFinal1 = 6;//+1 para que o indice final nao seja igual ao inicial
+    indice2 = 12;
+    indiceFinal2 = 14;
+
+    vector<int> subSeq1(seqTeste.begin() + indice1, seqTeste.begin() + indiceFinal1);//cria subsequencia 1 a partir do indice inicial e final 1
+    vector<int> subSeq2(seqTeste.begin() + indice2, seqTeste.begin() + indiceFinal2);//cria subsequencia 2 a partir do indice inicial e final 2
+
+    cout << "subSeq1: " << endl;
+    printSolucao(subSeq1);
+    cout << "subSeq2: " << endl;
+    printSolucao(subSeq2);
+
+    tamEntreSub = indice2 - indiceFinal1;
+    tam1 = indiceFinal1 - indice1;
+    tam2 = indiceFinal2 - indice2;
+
+    cout << "tam entre subsequencias: " << tamEntreSub << endl;
+    cout << "tam1: " << tam1 << endl;
+    cout << "tam2: " << tam2 << endl;
+
+    seqTeste.erase(seqTeste.begin() + indice1, seqTeste.begin() + indiceFinal1);//apaga a subsequencia 1
+    seqTeste.insert(seqTeste.begin() + indice1, subSeq2.begin(), subSeq2.end());//insere a subsequencia 2 na posicao do indice 1
+    cout << "solucao antes do erase" << endl;
+    printSolucao(seqTeste);
+    seqTeste.erase(seqTeste.begin() + indice1 + tam2 + tamEntreSub, seqTeste.begin() + indice1 + tam2 + tamEntreSub + tam2);
+    cout << "solucao depois do erase" << endl;
+    printSolucao(seqTeste);
+    seqTeste.insert(seqTeste.begin() + indice1 + tam2 + tamEntreSub, subSeq1.begin(), subSeq1.end());
+    cout << "solucao apos insert" << endl;
+    printSolucao(seqTeste);
 
     
-    unsigned seed = time(0);
-    cout << seed << endl;
-    srand (1669752966);
+    cout << "Solucao teste: " << endl;
+    printSolucao(seqTeste);*/
+    
 
-    for(int i = 0; i < maxIter; i++){
+  vector<int> sequencia, best, bestOfAll;
+  double custo = 0;
+  double custoBest;
+  double custoBestOfAll = INFINITY;
+  int maxIter = 50;
+  int maxIterILS;
 
-      sequencia = construcao();
-      best = sequencia;
+  if(dimension >= 150){
+    maxIterILS = dimension / 2.0;
+  }else{
+    maxIterILS = dimension;
+  }
 
-      cout << "solucao inicial: " << endl; 
+    
+  unsigned seed = time(0);
+  cout << seed << endl;
+  srand (1669752966);
 
-      printSolucao(sequencia);
+  for(int i = 0; i < maxIter; i++){
 
-      custo = custoDaSolucao(sequencia);
-      custoBest = custo; 
+    double alpha = (double) rand() / RAND_MAX;
 
-      cout << "custo da solucao inicial: " << custo << endl;
+    sequencia = construcao(alpha);
+    best = sequencia;
 
-      int iterILS = 0;
+    //cout << "solucao inicial: " << endl; 
 
-      //while(iterILS <= maxIterILS){
-        buscaLocal(sequencia, custo);
-        if(custo < custoBest){
-          cout << "dentro do if" << endl;
-          custoBest = custo;
-          best = sequencia;
-          printSolucao(best);
-          iterILS = 0;
-        }
-        cout << "antes pert" << endl;
-        sequencia = perturbacao(best);
-        printSolucao(best);
-        iterILS++;
-     // }
+    //printSolucao(sequencia);
 
-      //perturbacao(sequencia);
+    custo = custoDaSolucao(sequencia);
+    custoBest = custo; 
 
+    //cout << "custo da solucao inicial: " << custo << endl;
+
+    int iterILS = 0;
+
+    while(iterILS <= maxIterILS){
+      buscaLocal(sequencia, custo);
+      if(custo < custoBest){
+        //cout << "custo dentro do if: " << custo << endl;
+        //cout << "dentro do if" << endl;
+        custoBest = custo;
+        best = sequencia;
+        //printSolucao(best);
+        iterILS = 0;
+      }
+      //cout << "antes pert" << endl;
+      sequencia = perturbacao(best);
+      //cout << "sequencia apos pert" << endl;
       //printSolucao(sequencia);
-    
+      custo = custoDaSolucao(sequencia);
+      iterILS++;
+    }
+    if(custoBest < custoBestOfAll)
+      bestOfAll = best;
+      custoBestOfAll = custoBest;
+  }
 
-    //bestImprovementSwap(sequencia, custo);
+  cout << "solucao best of all: " << endl;
+  printSolucao(bestOfAll);
+  //custoBestOfAll = custoDaSolucao(bestOfAll);
+  cout << "Custo best of all: " << custoBestOfAll << endl;
 
-    //bestImprovement2Opt(sequencia, custo); 
+  //return bestOfAll;
 
-    //bestImprovementOrOpt2(sequencia, custo); 
+    //perturbacao(sequencia);
 
-    //bestImprovementOrOpt3(sequencia, custo);
+    //printSolucao(sequencia);
+  
 
-    //bestImprovementReinsertion(sequencia, custo);
+  //bestImprovementSwap(sequencia, custo);
 
-    
+  //bestImprovement2Opt(sequencia, custo); 
 
-   }
+  //bestImprovementOrOpt2(sequencia, custo); 
+
+  //bestImprovementOrOpt3(sequencia, custo);
+
+  //bestImprovementReinsertion(sequencia, custo);
+
+  
+
+  
 
 
-    return 0; 
+  return 0; 
 
-    
+  
 
 }
 
