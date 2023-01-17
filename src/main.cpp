@@ -16,6 +16,8 @@ int dimension; // quantidade total de vertices
 
 void printData();
 
+vector<int> solucaoFinal;
+
 struct InsertionInfo{
   int noInserido; // k a ser inserido
   int arestaRemovida; // aresta {i,j} na qual o k vai ser inserido
@@ -572,28 +574,11 @@ vector<int> perturbacao(vector<int> &sequencia){
   return copia; 
 }
 
-int main(int argc, char** argv){
-
-  readData(argc, argv, &dimension, &matrizAdj);
-  printData();  
-
+vector<int> ILS(int maxIter, int maxIterILS){
   vector<int> sequencia, best, bestOfAll;
   double custo = 0;
   double custoBest;
   double custoBestOfAll = INFINITY;
-  int maxIter = 50;
-  int maxIterILS;
-
-  if(dimension >= 150){
-    maxIterILS = dimension / 2.0;
-  }else{
-    maxIterILS = dimension;
-  }
-
-    
-  unsigned seed = time(0);
-  cout << seed << endl;
-  srand (seed);
 
   for(int i = 0; i < maxIter; i++){
 
@@ -635,11 +620,37 @@ int main(int argc, char** argv){
       custoBestOfAll = custoBest;
     }
   }
+  return bestOfAll;
+}
+
+int main(int argc, char** argv){
+
+  readData(argc, argv, &dimension, &matrizAdj);
+  printData();  
+
+  int maxIter = 50;
+  int maxIterILS;
+  double valorTotal;
+
+  unsigned seed = time(0);
+  cout << seed << endl;
+  srand (seed);
+
+  if(dimension >= 150){
+    maxIterILS = dimension / 2.0;
+  }else{
+    maxIterILS = dimension;
+  }
+
+  solucaoFinal = ILS(maxIter, maxIterILS);
+  valorTotal = custoDaSolucao(solucaoFinal);
+
+
 
   cout << "solucao best of all: " << endl;
-  printSolucao(bestOfAll);
+  printSolucao(solucaoFinal);
   //custoBestOfAll = custoDaSolucao(bestOfAll);
-  cout << "Custo best of all: " << custoBestOfAll << endl;
+  cout << "Custo best of all: " << valorTotal << endl;
 
   //return bestOfAll;
 
