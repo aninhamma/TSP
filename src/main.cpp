@@ -5,6 +5,9 @@
 #include <algorithm>
 #include <cmath>
 #include <random>
+#include <sys/timeb.h>
+#include <sys/resource.h>
+#include <ctime>
 
 using namespace std;
 
@@ -110,6 +113,7 @@ vector<int> construcao(double alpha){
   //vector <int> best;//solucao melhorada
   int i;
   double custo = 0;
+  
 
   for(i = 0; i < dimension; i++){
     CL.push_back(i+1);
@@ -157,6 +161,8 @@ vector<int> construcao(double alpha){
 
   }
 
+  
+
   //cout << "Solucao inicial: " << endl; 
 
   //printSolucao(sequencia);
@@ -191,6 +197,7 @@ bool bestImprovementSwap(vector <int> &sequencia, double &custo){
   double bestDelta = 0;
   double custoTeste;
   vector<int> copia = sequencia;
+  
 
   int best_i = 0, best_j = 0;
   for(int i = 1; i < sequencia.size() - 1; i++){
@@ -220,12 +227,13 @@ bool bestImprovementSwap(vector <int> &sequencia, double &custo){
   if(bestDelta < 0){
     swap(sequencia[best_i], sequencia[best_j]);
     //cout << "custo antes da troca: " << custo << endl;
-    custo = custo + delta;
+    custo = custo + bestDelta;
     //cout << "custo apos a troca: " << custo << endl; 
     return true; 
   }else{
     return false;
   }
+  
   
 }
 
@@ -242,6 +250,7 @@ bool bestImprovement2Opt(vector <int> &sequencia, double &custo){
   double bestDelta = 0; 
   double custoTeste;
   vector<int> copia = sequencia;
+  
 
   int best_i = 0, best_j = 0;
   for(int i = 1; i < sequencia.size() - 1; i++){
@@ -277,6 +286,7 @@ bool bestImprovement2Opt(vector <int> &sequencia, double &custo){
   }else{
     return false;
   }
+ 
   
 }
 
@@ -297,6 +307,7 @@ bool bestImprovementReinsertion(vector <int> &sequencia, double &custo){
   double bestDelta = 0;
   double custoTeste;
   vector<int> copia = sequencia;
+  
 
   int best_i = 0, best_j = 0;
   for(int i = 1; i < sequencia.size() - 1; i++){
@@ -338,6 +349,7 @@ bool bestImprovementReinsertion(vector <int> &sequencia, double &custo){
     return false;
   }
   
+  
 }
 
 double calculateOrOpt2Cost(int i, int j, vector<int> &sequencia){
@@ -356,6 +368,7 @@ bool bestImprovementOrOpt2(vector <int> &sequencia, double &custo){
   double bestDelta = 0; 
   double custoTeste;
   vector<int> copia = sequencia;
+  
 
   int best_i = 0, best_j = 0;
   //cout << "tamanho sequencia: " << sequencia.size() << endl;
@@ -409,6 +422,7 @@ bool bestImprovementOrOpt2(vector <int> &sequencia, double &custo){
     return false;
   }
   
+  
 }
 
 double calculateOrOpt3Cost(int i, int j, vector<int> &sequencia){
@@ -428,6 +442,7 @@ bool bestImprovementOrOpt3(vector <int> &sequencia, double &custo){
   double custoTeste;
   double custoAntes = custo;
   vector<int> copia = sequencia;
+  
 
   int best_i = 0, best_j = 0;
   //cout << "inicio" << endl;
@@ -470,6 +485,7 @@ bool bestImprovementOrOpt3(vector <int> &sequencia, double &custo){
   }else{
     return false;
   }
+  
   
 }
 
@@ -561,50 +577,6 @@ int main(int argc, char** argv){
   readData(argc, argv, &dimension, &matrizAdj);
   printData();  
 
-  //vector<int> seqTeste = {1,14,5,4,8,7,13,6,12,3,10,2,11,9,1};
-
-  /*int tamMaxSubSeq, tamMinSubSeq = 2;
-  int indice1, indice2;
-  int tam1, tam2, indiceFinal1,indiceFinal2;
-  int tamEntreSub; //tam entre a subsequencia1 e a subsequencia 2
-    
-    indice1 = 1;
-    indiceFinal1 = 6;//+1 para que o indice final nao seja igual ao inicial
-    indice2 = 12;
-    indiceFinal2 = 14;
-
-    vector<int> subSeq1(seqTeste.begin() + indice1, seqTeste.begin() + indiceFinal1);//cria subsequencia 1 a partir do indice inicial e final 1
-    vector<int> subSeq2(seqTeste.begin() + indice2, seqTeste.begin() + indiceFinal2);//cria subsequencia 2 a partir do indice inicial e final 2
-
-    cout << "subSeq1: " << endl;
-    printSolucao(subSeq1);
-    cout << "subSeq2: " << endl;
-    printSolucao(subSeq2);
-
-    tamEntreSub = indice2 - indiceFinal1;
-    tam1 = indiceFinal1 - indice1;
-    tam2 = indiceFinal2 - indice2;
-
-    cout << "tam entre subsequencias: " << tamEntreSub << endl;
-    cout << "tam1: " << tam1 << endl;
-    cout << "tam2: " << tam2 << endl;
-
-    seqTeste.erase(seqTeste.begin() + indice1, seqTeste.begin() + indiceFinal1);//apaga a subsequencia 1
-    seqTeste.insert(seqTeste.begin() + indice1, subSeq2.begin(), subSeq2.end());//insere a subsequencia 2 na posicao do indice 1
-    cout << "solucao antes do erase" << endl;
-    printSolucao(seqTeste);
-    seqTeste.erase(seqTeste.begin() + indice1 + tam2 + tamEntreSub, seqTeste.begin() + indice1 + tam2 + tamEntreSub + tam2);
-    cout << "solucao depois do erase" << endl;
-    printSolucao(seqTeste);
-    seqTeste.insert(seqTeste.begin() + indice1 + tam2 + tamEntreSub, subSeq1.begin(), subSeq1.end());
-    cout << "solucao apos insert" << endl;
-    printSolucao(seqTeste);
-
-    
-    cout << "Solucao teste: " << endl;
-    printSolucao(seqTeste);*/
-    
-
   vector<int> sequencia, best, bestOfAll;
   double custo = 0;
   double custoBest;
@@ -621,7 +593,7 @@ int main(int argc, char** argv){
     
   unsigned seed = time(0);
   cout << seed << endl;
-  srand (1669752966);
+  srand (seed);
 
   for(int i = 0; i < maxIter; i++){
 
@@ -658,9 +630,10 @@ int main(int argc, char** argv){
       custo = custoDaSolucao(sequencia);
       iterILS++;
     }
-    if(custoBest < custoBestOfAll)
+    if(custoBest < custoBestOfAll){
       bestOfAll = best;
       custoBestOfAll = custoBest;
+    }
   }
 
   cout << "solucao best of all: " << endl;
@@ -708,7 +681,8 @@ void printData(){
 
 
 
-//fazer a copia da solucao e depois realizar o movimento e calcular o custo total
+
+
 
 
 
