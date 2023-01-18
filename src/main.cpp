@@ -18,6 +18,12 @@ void printData();
 
 vector<int> solucaoFinal;
 
+double cpuTime(){
+	static struct rusage usage;
+	getrusage(RUSAGE_SELF, &usage);
+	return ((double)usage.ru_utime.tv_sec)+(((double)usage.ru_utime.tv_usec)/((double)1000000));
+}
+
 struct InsertionInfo{
   int noInserido; // k a ser inserido
   int arestaRemovida; // aresta {i,j} na qual o k vai ser inserido
@@ -626,15 +632,16 @@ vector<int> ILS(int maxIter, int maxIterILS){
 int main(int argc, char** argv){
 
   readData(argc, argv, &dimension, &matrizAdj);
-  printData();  
+  //printData();
+
+  double somaTempos = 0;
+  double somaValores = 0; 
 
   int maxIter = 50;
   int maxIterILS;
-  double valorTotal;
-
-  unsigned seed = time(0);
-  cout << seed << endl;
-  srand (seed);
+  vector<int> solucaoIteracao;
+  double valorIteracao;
+  double valorTotal = numeric_limits<double>::infinity();
 
   if(dimension >= 150){
     maxIterILS = dimension / 2.0;
@@ -642,15 +649,39 @@ int main(int argc, char** argv){
     maxIterILS = dimension;
   }
 
-  solucaoFinal = ILS(maxIter, maxIterILS);
-  valorTotal = custoDaSolucao(solucaoFinal);
+  for(int i = 0; i < 10; i++){
+
+    unsigned seed = time(0);
+    //cout << seed << endl;
+    srand (seed);
+
+    double antes = cpuTime();
+
+    solucaoIteracao = ILS(maxIter, maxIterILS);
+    valorIteracao = custoDaSolucao(solucaoIteracao);
+
+    double depois = cpuTime();
+
+    double tempoTotal = depois - antes;
+
+    somaTempos += tempoTotal;
+    somaValores += valorIteracao;
+  }
+
+  if(valorTotal > valorIteracao){
+    valorTotal = valorIteracao;
+    solucaoFinal = solucaoIteracao;
+  }
 
 
 
   cout << "solucao best of all: " << endl;
   printSolucao(solucaoFinal);
   //custoBestOfAll = custoDaSolucao(bestOfAll);
-  cout << "Custo best of all: " << valorTotal << endl;
+  //cout << "Custo best of all: " << valorTotal << endl;
+
+  cout << "Valor Medio da Solucao: " << (somaValores/10) << endl;
+  cout << "Tempo Medio de Execucao: " << (somaTempos/10) << " (s)" << endl;
 
   //return bestOfAll;
 
