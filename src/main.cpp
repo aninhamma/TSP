@@ -262,13 +262,14 @@ bool bestImprovementSwap(vector <int> &sequencia, double &custo){
     //cout << "custo antes da troca: " << custo << endl;
     custo = custo + bestDelta;
     //cout << "custo apos a troca: " << custo << endl; 
+    double fimSwap = cpuTime();
+    tempo_swap += (fimSwap - inicioSwap);
     return true; 
   }else{
+    double fimSwap = cpuTime();
+    tempo_swap += (fimSwap - inicioSwap);
     return false;
   }
-  double fimSwap = cpuTime();
-  tempo_swap += (fimSwap - inicioSwap);
-  
   
 }
 
@@ -318,12 +319,15 @@ bool bestImprovement2Opt(vector <int> &sequencia, double &custo){
     //cout << "custo antes do 2opt: " << custo << endl;
     custo = custo + bestDelta;
     //cout << "custo apos o 2opt: " << custo << endl;
+    double fim2opt = cpuTime();
+    tempo_2opt += (fim2opt - inicio2opt);
     return true; 
   }else{
+    double fim2opt = cpuTime();
+    tempo_2opt += (fim2opt - inicio2opt);
     return false;
   }
-  double fim2opt = cpuTime();
-  tempo_2opt += (fim2opt - inicio2opt);
+  
  
   
 }
@@ -384,12 +388,14 @@ bool bestImprovementReinsertion(vector <int> &sequencia, double &custo){
     //cout << "custo antes do reinsertion: " << custo << endl;
     custo = custo + bestDelta;
     //cout << "custo apos o reinsertion: " << custo << endl;
+    double fimReinsertion =  cpuTime();
+    tempo_reinsertion += (fimReinsertion - inicioreinsertion);
     return true; 
   }else{
+    double fimReinsertion =  cpuTime();
+    tempo_reinsertion += (fimReinsertion - inicioreinsertion);
     return false;
   }
-  double fimReinsertion =  cpuTime();
-  tempo_reinsertion += (fimReinsertion - inicioreinsertion);
   
   
 }
@@ -461,12 +467,14 @@ bool bestImprovementOrOpt2(vector <int> &sequencia, double &custo){
     //cout << "custo antes do Oropt2: " << custo << endl;
     custo = custo + bestDelta; 
     //cout << "custo apos o Oropt2: " << custo << endl;
+    double fimOropt2 = cpuTime();
+    tempo_orOpt2 += (fimOropt2 - inicioOropt2);
     return true;  
   }else{
+    double fimOropt2 = cpuTime();
+    tempo_orOpt2 += (fimOropt2 - inicioOropt2);
     return false;
   }
-  double fimOropt2 = cpuTime();
-  tempo_orOpt2 += (fimOropt2 - inicioOropt2);
   
   
 }
@@ -528,12 +536,14 @@ bool bestImprovementOrOpt3(vector <int> &sequencia, double &custo){
     custo = custo + bestDelta;
     //cout << "custo apos o Oropt3: " << custo << endl;
 
+    double fimOropt3 = cpuTime();
+    tempo_orOpt3 += (fimOropt3 - inicioOropt3);
     return true; 
   }else{
+    double fimOropt3 = cpuTime();
+    tempo_orOpt3 += (fimOropt3 - inicioOropt3);
     return false;
   }
-  double fimOropt3 = cpuTime();
-  tempo_orOpt3 += (fimOropt3 - inicioOropt3);
   
   
 }
