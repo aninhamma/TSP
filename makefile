@@ -1,17 +1,16 @@
+
+
 #detecta se o sistema é de 32 ou 64 bits
 BITS_OPTION = -m64
+
 
 #### define o compilador
 CPPC = g++
 #############################
 
 #### opcoes de compilacao e includes
-CCOPT = $(BITS_OPTION) -O3 -fPIC -fexceptions -DNDEBUG -DIL_STD -std=c++0x -g
-CONCERTINCDIR = $(CONCERTDIR)/include
+CCOPT = $(BITS_OPTION) -O3 -fPIC -fexceptions -DNDEBUG -DIL_STD -std=c++0x
 CCFLAGS = $(CCOPT)
-#############################
-
-#### flags do linker
 #############################
 
 #### diretorios com os source files e com os objs files
@@ -27,7 +26,7 @@ OBJS = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRCS))
 #### regra principal, gera o executavel
 tsp: $(OBJS) 
 	@echo  "\033[31m \nLinking all objects files: \033[0m"
-	$(CPPC) $(BITS_OPTION) $(OBJS) -o $@ $(CCLNFLAGS)
+	$(CPPC) $(BITS_OPTION) $(OBJS) -o $@
 ############################
 
 #inclui os arquivos de dependencias
