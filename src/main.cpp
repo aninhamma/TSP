@@ -18,10 +18,28 @@ void printData();
 
 vector<int> solucaoFinal;
 
+double tempo_construction = 0;
+double tempo_swap = 0;
+double tempo_reinsertion = 0;
+double tempo_2opt = 0;
+double tempo_orOpt2 = 0;
+double tempo_orOpt3 = 0;
+
 double cpuTime(){
 	static struct rusage usage;
 	getrusage(RUSAGE_SELF, &usage);
 	return ((double)usage.ru_utime.tv_sec)+(((double)usage.ru_utime.tv_usec)/((double)1000000));
+}
+
+void printTime(){
+  cout << "Tempo medio de execucao da SI: " << (tempo_construction/10) << " (s)";
+  cout << "\n" << "Tempo medio de execucao da troca: " << (tempo_swap/10)<< " (s)";
+  cout << "\n" << "Tempo medio de execucao do Or-opt: " << (tempo_reinsertion/10)<< " (s)";
+  cout << "\n" << "Tempo medio de execucao do Or-opt2: " << (tempo_orOpt2/10)<< " (s)";
+  cout << "\n" << "Tempo medio de execucao do Or-opt3: " << (tempo_orOpt3/10)<< " (s)";
+  cout << "\n" << "Tempo medio de execucao do 2-opt: " << (tempo_2opt/10)<< " (s)";
+
+  cout << "\n\n";
 }
 
 struct InsertionInfo{
@@ -116,6 +134,8 @@ double custoDaSolucao(vector<int> &sequencia){
 }
 
 vector<int> construcao(double alpha){
+
+  double inicioconstruction = cpuTime();
   vector <int> CL;
   vector <int> sequencia;//primeira solucao
   //vector <int> best;//solucao melhorada
@@ -175,6 +195,9 @@ vector<int> construcao(double alpha){
 
   //printSolucao(sequencia);
 
+  double fimConstruction = cpuTime();
+  tempo_construction += (fimConstruction - inicioconstruction);
+
   custo = custoDaSolucao(sequencia);
 
   //cout << "custo da solucao inicial: " << custo << endl;
@@ -184,6 +207,7 @@ vector<int> construcao(double alpha){
 }
 
 double calculateSwapCost(int i, int j, vector <int> &sequencia){ //i e j sao cidades que serao trocadas
+
   double delta;
 
   double parteDaSeqInicial = -(matrizAdj[sequencia[i]][sequencia[i + 1]] + matrizAdj[sequencia[i]][sequencia[i - 1]] +
@@ -201,10 +225,11 @@ double calculateSwapCost(int i, int j, vector <int> &sequencia){ //i e j sao cid
 }
 
 bool bestImprovementSwap(vector <int> &sequencia, double &custo){
+  double inicioSwap = cpuTime();
   double delta;
   double bestDelta = 0;
   double custoTeste;
-  vector<int> copia = sequencia;
+  //vector<int> copia = sequencia;
   
 
   int best_i = 0, best_j = 0;
@@ -241,6 +266,8 @@ bool bestImprovementSwap(vector <int> &sequencia, double &custo){
   }else{
     return false;
   }
+  double fimSwap = cpuTime();
+  tempo_swap += (fimSwap - inicioSwap);
   
   
 }
@@ -254,10 +281,11 @@ double calculate2OptCost(int i, int j, vector<int> &sequencia){
 }
 
 bool bestImprovement2Opt(vector <int> &sequencia, double &custo){
+  double inicio2opt = cpuTime();
   double delta;
   double bestDelta = 0; 
   double custoTeste;
-  vector<int> copia = sequencia;
+  //vector<int> copia = sequencia;
   
 
   int best_i = 0, best_j = 0;
@@ -294,6 +322,8 @@ bool bestImprovement2Opt(vector <int> &sequencia, double &custo){
   }else{
     return false;
   }
+  double fim2opt = cpuTime();
+  tempo_2opt += (fim2opt - inicio2opt);
  
   
 }
@@ -311,6 +341,7 @@ double calculateReinsertionCost(int i, int j, vector<int> &sequencia){
   
 
 bool bestImprovementReinsertion(vector <int> &sequencia, double &custo){
+  double inicioreinsertion = cpuTime();
   double delta;
   double bestDelta = 0;
   double custoTeste;
@@ -333,7 +364,7 @@ bool bestImprovementReinsertion(vector <int> &sequencia, double &custo){
           cout << "i: " << i << "j: " << j << endl;
         }*/
 
-      }
+      
 
       //copia = sequencia;
 
@@ -342,6 +373,7 @@ bool bestImprovementReinsertion(vector <int> &sequencia, double &custo){
           best_i = i;
           best_j = j;
         }
+      }
     }
   }
 
@@ -356,6 +388,8 @@ bool bestImprovementReinsertion(vector <int> &sequencia, double &custo){
   }else{
     return false;
   }
+  double fimReinsertion =  cpuTime();
+  tempo_reinsertion += (fimReinsertion - inicioreinsertion);
   
   
 }
@@ -372,6 +406,7 @@ double calculateOrOpt2Cost(int i, int j, vector<int> &sequencia){
 }
 
 bool bestImprovementOrOpt2(vector <int> &sequencia, double &custo){
+  double inicioOropt2 = cpuTime();
   double delta;
   double bestDelta = 0; 
   double custoTeste;
@@ -405,7 +440,7 @@ bool bestImprovementOrOpt2(vector <int> &sequencia, double &custo){
           cout << "custo teste: " << custoTeste << endl;
           cout << "i: " << i << "j: " << j << endl;
         }*/
-      }
+      
       //cout << "Antes da copia" << endl;
       //copia = sequencia;
       
@@ -414,6 +449,7 @@ bool bestImprovementOrOpt2(vector <int> &sequencia, double &custo){
           best_i = i;
           best_j = j;
         }
+      }
     }
     //cout << "Teste apos o primeiro for" << endl;
   }
@@ -429,6 +465,8 @@ bool bestImprovementOrOpt2(vector <int> &sequencia, double &custo){
   }else{
     return false;
   }
+  double fimOropt2 = cpuTime();
+  tempo_orOpt2 += (fimOropt2 - inicioOropt2);
   
   
 }
@@ -445,6 +483,7 @@ double calculateOrOpt3Cost(int i, int j, vector<int> &sequencia){
 }
 
 bool bestImprovementOrOpt3(vector <int> &sequencia, double &custo){
+  double inicioOropt3 = cpuTime();
   double delta;
   double bestDelta = 0;
   double custoTeste;
@@ -493,6 +532,8 @@ bool bestImprovementOrOpt3(vector <int> &sequencia, double &custo){
   }else{
     return false;
   }
+  double fimOropt3 = cpuTime();
+  tempo_orOpt3 += (fimOropt3 - inicioOropt3);
   
   
 }
@@ -682,6 +723,8 @@ int main(int argc, char** argv){
 
   cout << "Valor Medio da Solucao: " << (somaValores/10) << endl;
   cout << "Tempo Medio de Execucao: " << (somaTempos/10) << " (s)" << endl;
+
+  printTime();
 
   //return bestOfAll;
 
