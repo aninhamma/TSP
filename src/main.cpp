@@ -24,6 +24,7 @@ double tempo_reinsertion = 0;
 double tempo_2opt = 0;
 double tempo_orOpt2 = 0;
 double tempo_orOpt3 = 0;
+double tempo_perturbacao = 0;
 
 double cpuTime(){
 	static struct rusage usage;
@@ -38,6 +39,7 @@ void printTime(){
   cout << "\n" << "Tempo medio de execucao do Or-opt2: " << (tempo_orOpt2/10)<< " (s)";
   cout << "\n" << "Tempo medio de execucao do Or-opt3: " << (tempo_orOpt3/10)<< " (s)";
   cout << "\n" << "Tempo medio de execucao do 2-opt: " << (tempo_2opt/10)<< " (s)";
+  cout << "\n" << "Tempo medio de execucao da perturbacao: " << (tempo_perturbacao/10)<< " (s)";
 
   cout << "\n\n";
 }
@@ -206,7 +208,7 @@ vector<int> construcao(double alpha){
   
 }
 
-double calculateSwapCost(int i, int j, vector <int> &sequencia){ //i e j sao cidades que serao trocadas
+inline double calculateSwapCost(int i, int j, vector <int> &sequencia){ //i e j sao cidades que serao trocadas
 
   double delta;
 
@@ -273,7 +275,7 @@ bool bestImprovementSwap(vector <int> &sequencia, double &custo){
   
 }
 
-double calculate2OptCost(int i, int j, vector<int> &sequencia){
+inline double calculate2OptCost(int i, int j, vector<int> &sequencia){
   double delta;
 
   delta = -matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[j]][sequencia[j + 1]] + matrizAdj[sequencia[i - 1]][sequencia[j]] + matrizAdj[sequencia[i]][sequencia[j + 1]];
@@ -332,7 +334,7 @@ bool bestImprovement2Opt(vector <int> &sequencia, double &custo){
   
 }
 
-double calculateReinsertionCost(int i, int j, vector<int> &sequencia){
+inline double calculateReinsertionCost(int i, int j, vector<int> &sequencia){
   double delta;
 
   if(i < j){
@@ -400,7 +402,7 @@ bool bestImprovementReinsertion(vector <int> &sequencia, double &custo){
   
 }
 
-double calculateOrOpt2Cost(int i, int j, vector<int> &sequencia){
+inline double calculateOrOpt2Cost(int i, int j, vector<int> &sequencia){
   double delta;
 
   if(i < j){
@@ -479,7 +481,7 @@ bool bestImprovementOrOpt2(vector <int> &sequencia, double &custo){
   
 }
 
-double calculateOrOpt3Cost(int i, int j, vector<int> &sequencia){
+inline double calculateOrOpt3Cost(int i, int j, vector<int> &sequencia){
   double delta;
 
   if(i < j){
@@ -581,6 +583,7 @@ void buscaLocal(vector<int> &sequencia, double &custo){
 }
 
 vector<int> perturbacao(vector<int> &sequencia){
+  double inicioPert = cpuTime();
   int tamMaxSubSeq = ceil(((double)dimension)/10);
   //cout << "tam max: " << tamMaxSubSeq << endl;
   int indice1, indice2;
@@ -626,6 +629,10 @@ vector<int> perturbacao(vector<int> &sequencia){
 
     //cout << "Solucao apos perturbacao: " << endl;
     //printSolucao(copia);
+
+    double fimPert = cpuTime();
+
+    tempo_perturbacao += (fimPert - inicioPert);
 
   
   return copia; 
