@@ -27,9 +27,9 @@ double tempo_orOpt3 = 0;
 double tempo_perturbacao = 0;
 
 double cpuTime(){
-	static struct rusage usage;
-	getrusage(RUSAGE_SELF, &usage);
-	return ((double)usage.ru_utime.tv_sec)+(((double)usage.ru_utime.tv_usec)/((double)1000000));
+  static struct rusage usage;
+  getrusage(RUSAGE_SELF, &usage);
+  return ((double)usage.ru_utime.tv_sec)+(((double)usage.ru_utime.tv_usec)/((double)1000000));
 }
 
 void printTime(){
@@ -780,11 +780,3 @@ void printData(){
     cout << endl;
   }
 }
-
-
-
-
-
-
-
-
