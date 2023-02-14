@@ -208,7 +208,7 @@ vector<int> construcao(double alpha){
   
 }
 
-inline double calculateSwapCost(int i, int j, vector <int> &sequencia){ //i e j sao cidades que serao trocadas
+/*inline double calculateSwapCost(int i, int j, vector <int> &sequencia){ //i e j sao cidades que serao trocadas
 
   double delta;
 
@@ -224,22 +224,33 @@ inline double calculateSwapCost(int i, int j, vector <int> &sequencia){ //i e j 
 
   return delta;
 
-}
+}*/
 
 bool bestImprovementSwap(vector <int> &sequencia, double &custo){
   double inicioSwap = cpuTime();
   double delta;
   double bestDelta = 0;
   double custoTeste;
+  int tamanho = dimension + 1;
   //vector<int> copia = sequencia;
   
 
   int best_i = 0, best_j = 0;
-  for(int i = 1; i < sequencia.size() - 1; i++){
-    for(int j = i + 1; j < sequencia.size() - 1; j++){
+  for(int i = 1; i < tamanho - 1; i++){
+    for(int j = i + 1; j < tamanho - 1; j++){
       //swap(copia[i], copia[j]);
+      double parteDaSeqInicial = -(matrizAdj[sequencia[i]][sequencia[i + 1]] + matrizAdj[sequencia[i]][sequencia[i - 1]] +
+                              matrizAdj[sequencia[j]][sequencia[j + 1]] + matrizAdj[sequencia[j]][sequencia[j - 1]]);//parte da sequencia inicial que sera retirada quando as cidades trocadas nao forem vizinhas
 
-      delta = calculateSwapCost(i, j, sequencia); 
+      if(j == i + 1){ //para quando as cidades trocadas forem vizinhas
+        delta = -matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[j]][sequencia[j + 1]] + 
+                matrizAdj[sequencia[i - 1]][sequencia[j]] + matrizAdj[sequencia[i]][sequencia[j + 1]];
+      }else{
+        delta = parteDaSeqInicial + matrizAdj[sequencia[i]][sequencia[j + 1]] + matrizAdj[sequencia[i]][sequencia[j - 1]] + matrizAdj[sequencia[j]][sequencia[i + 1]] + matrizAdj[sequencia[j]][sequencia[i - 1]];
+      }
+
+
+      //delta = calculateSwapCost(i, j, sequencia); 
       //custoTeste = custoDaSolucao(copia);
 
       /*if(custo + delta != custoTeste){
@@ -275,28 +286,32 @@ bool bestImprovementSwap(vector <int> &sequencia, double &custo){
   
 }
 
-inline double calculate2OptCost(int i, int j, vector<int> &sequencia){
+/*inline double calculate2OptCost(int i, int j, vector<int> &sequencia){
   double delta;
 
   delta = -matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[j]][sequencia[j + 1]] + matrizAdj[sequencia[i - 1]][sequencia[j]] + matrizAdj[sequencia[i]][sequencia[j + 1]];
 
   return delta;
-}
+}*/
 
 bool bestImprovement2Opt(vector <int> &sequencia, double &custo){
   double inicio2opt = cpuTime();
-  double delta;
+  double deltaInicial, delta;
   double bestDelta = 0; 
   double custoTeste;
+  int tamanho = dimension + 1;
   //vector<int> copia = sequencia;
   
 
   int best_i = 0, best_j = 0;
-  for(int i = 1; i < sequencia.size() - 1; i++){
-    for(int j = i + 1; j < sequencia.size() - 1; j++){
-      //reverse(copia.begin() + i, copia.begin() + j + 1);
+  for(int i = 1; i < tamanho - 1; i++){
+    deltaInicial = -(matrizAdj[sequencia[i - 1]][sequencia[i]]);
 
-      delta = calculate2OptCost(i, j, sequencia);
+    for(int j = i + 1; j < tamanho - 1; j++){
+      //reverse(copia.begin() + i, copia.begin() + j + 1);
+      delta = deltaInicial - matrizAdj[sequencia[j]][sequencia[j + 1]] + matrizAdj[sequencia[i - 1]][sequencia[j]] + matrizAdj[sequencia[i]][sequencia[j + 1]];
+
+      //delta = calculate2OptCost(i, j, sequencia);
       //custoTeste = custoDaSolucao(copia);
 
       /*if(custo + delta != custoTeste){
@@ -334,7 +349,7 @@ bool bestImprovement2Opt(vector <int> &sequencia, double &custo){
   
 }
 
-inline double calculateReinsertionCost(int i, int j, vector<int> &sequencia){
+/*inline double calculateReinsertionCost(int i, int j, vector<int> &sequencia){
   double delta;
 
   if(i < j){
@@ -343,25 +358,32 @@ inline double calculateReinsertionCost(int i, int j, vector<int> &sequencia){
     delta = -matrizAdj[sequencia[j]][sequencia[j - 1]] - matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[i]][sequencia[i + 1]] + matrizAdj[sequencia[i]][sequencia[j]] + matrizAdj[sequencia[i - 1]][sequencia[i + 1]] + matrizAdj[sequencia[j - 1]][sequencia[i]];
   }
   return delta;
-}
+}*/
   
 
 bool bestImprovementReinsertion(vector <int> &sequencia, double &custo){
   double inicioreinsertion = cpuTime();
-  double delta;
+  double deltaInicial, delta;
   double bestDelta = 0;
   double custoTeste;
   vector<int> copia = sequencia;
+  int tamanho = dimension + 1;
   
 
   int best_i = 0, best_j = 0;
-  for(int i = 1; i < sequencia.size() - 1; i++){
-    for(int j = 1; j < sequencia.size() - 1; j++){
+  for(int i = 1; i < tamanho - 1; i++){
+    deltaInicial = -matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[i]][sequencia[i + 1]] + matrizAdj[sequencia[i - 1]][sequencia[i + 1]];
+    for(int j = 1; j < tamanho - 1; j++){
      
       if(i != j){
         /*copia.erase(copia.begin() + i);
         copia.insert(copia.begin() + j, sequencia[i]);*/
-        delta = calculateReinsertionCost(i, j, sequencia);
+        if(i < j){
+          delta = deltaInicial - matrizAdj[sequencia[j]][sequencia[j + 1]] + matrizAdj[sequencia[i]][sequencia[j]] + matrizAdj[sequencia[i]][sequencia[j + 1]];
+        }else{
+          delta = deltaInicial - matrizAdj[sequencia[j]][sequencia[j - 1]] + matrizAdj[sequencia[i]][sequencia[j]] + matrizAdj[sequencia[j - 1]][sequencia[i]];
+        }
+        //delta = calculateReinsertionCost(i, j, sequencia);
         //custoTeste = custoDaSolucao(copia);
 
         /*if(custo + delta != custoTeste){
@@ -402,7 +424,7 @@ bool bestImprovementReinsertion(vector <int> &sequencia, double &custo){
   
 }
 
-inline double calculateOrOpt2Cost(int i, int j, vector<int> &sequencia){
+/*inline double calculateOrOpt2Cost(int i, int j, vector<int> &sequencia){
   double delta;
 
   if(i < j){
@@ -411,21 +433,23 @@ inline double calculateOrOpt2Cost(int i, int j, vector<int> &sequencia){
     delta = -matrizAdj[sequencia[j - 1]][sequencia[j]] - matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[i + 1]][sequencia[i + 2]] + matrizAdj[sequencia[j - 1]][sequencia[i]] + matrizAdj[sequencia[i + 1]][sequencia[j]] + matrizAdj[sequencia[i - 1]][sequencia[i + 2]];
   }
   return delta; 
-}
+}*/
 
 bool bestImprovementOrOpt2(vector <int> &sequencia, double &custo){
   double inicioOropt2 = cpuTime();
-  double delta;
+  double deltaInicial, delta;
   double bestDelta = 0; 
   double custoTeste;
   vector<int> copia = sequencia;
+  int tamanho = dimension + 1;
   
 
   int best_i = 0, best_j = 0;
   //cout << "tamanho sequencia: " << sequencia.size() << endl;
 
-  for(int i = 1; i < sequencia.size() - 2; i++){
-    for(int j = 1; j < sequencia.size() - 3; j++){
+  for(int i = 1; i < tamanho - 2; i++){
+    deltaInicial = -matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[i + 1]][sequencia[i + 2]] + matrizAdj[sequencia[i - 1]][sequencia[i + 2]];
+    for(int j = 1; j < tamanho - 3; j++){
       //cout << "i: " << i << "j: " << j << endl;
     
       if(i != j){
@@ -440,7 +464,12 @@ bool bestImprovementOrOpt2(vector <int> &sequencia, double &custo){
           cout << copia[k] << "->";
         }
           cout << copia.back() << endl;*/
-        delta = calculateOrOpt2Cost(i, j, sequencia);
+        if(i < j){
+          delta = deltaInicial - matrizAdj[sequencia[j + 1]][sequencia[j + 2]] + matrizAdj[sequencia[i + 1]][sequencia[j + 2]] + matrizAdj[sequencia[i]][sequencia[j + 1]];
+        }else{
+          delta = deltaInicial - matrizAdj[sequencia[j - 1]][sequencia[j]] + matrizAdj[sequencia[j - 1]][sequencia[i]] + matrizAdj[sequencia[i + 1]][sequencia[j]];
+        }
+        //delta = calculateOrOpt2Cost(i, j, sequencia);
         //custoTeste = custoDaSolucao(copia);
       
         /*if(custo + delta != custoTeste){
@@ -481,7 +510,7 @@ bool bestImprovementOrOpt2(vector <int> &sequencia, double &custo){
   
 }
 
-inline double calculateOrOpt3Cost(int i, int j, vector<int> &sequencia){
+/*inline double calculateOrOpt3Cost(int i, int j, vector<int> &sequencia){
   double delta;
 
   if(i < j){
@@ -490,26 +519,33 @@ inline double calculateOrOpt3Cost(int i, int j, vector<int> &sequencia){
     delta = -matrizAdj[sequencia[j - 1]][sequencia[j]] - matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[i + 2]][sequencia[i + 3]] + matrizAdj[sequencia[j - 1]][sequencia[i]] + matrizAdj[sequencia[i + 2]][sequencia[j]] + matrizAdj[sequencia[i - 1]][sequencia[i + 3]];
   }
   return delta;
-}
+}*/
 
 bool bestImprovementOrOpt3(vector <int> &sequencia, double &custo){
   double inicioOropt3 = cpuTime();
-  double delta;
+  double deltaInicial, delta;
   double bestDelta = 0;
   double custoTeste;
   double custoAntes = custo;
   vector<int> copia = sequencia;
+  int tamanho = dimension + 1;
   
 
   int best_i = 0, best_j = 0;
   //cout << "inicio" << endl;
-  for(int i = 1; i < sequencia.size() - 3; i++){
-    for(int j = 1; j < sequencia.size() - 4; j++){ 
+  for(int i = 1; i < tamanho - 3; i++){
+    deltaInicial = -matrizAdj[sequencia[i - 1]][sequencia[i]] - matrizAdj[sequencia[i + 2]][sequencia[i + 3]] + matrizAdj[sequencia[i - 1]][sequencia[i + 3]];
+    for(int j = 1; j < tamanho - 4; j++){ 
 
       if(i != j){
         /*copia.erase(copia.begin() + i, copia.begin() + i + 3);
         copia.insert(copia.begin() + j, &sequencia[i], &sequencia[i] + 3);*/
-        delta = calculateOrOpt3Cost(i, j, sequencia); 
+        if(i < j){
+          delta =  deltaInicial - matrizAdj[sequencia[j + 2]][sequencia[j + 3]] + matrizAdj[sequencia[i]][sequencia[j + 2]] + matrizAdj[sequencia[i + 2]][sequencia[j + 3]];
+        }else{
+          delta = deltaInicial - matrizAdj[sequencia[j - 1]][sequencia[j]] + matrizAdj[sequencia[j - 1]][sequencia[i]] + matrizAdj[sequencia[i + 2]][sequencia[j]];
+        }
+        //delta = calculateOrOpt3Cost(i, j, sequencia); 
       
         //custoTeste = custoDaSolucao(copia);
        
