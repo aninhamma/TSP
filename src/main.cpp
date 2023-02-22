@@ -366,7 +366,7 @@ bool bestImprovementReinsertion(vector <int> &sequencia, double &custo){
   double deltaInicial, delta;
   double bestDelta = 0;
   double custoTeste;
-  vector<int> copia = sequencia;
+  //vector<int> copia = sequencia;
   int tamanho = dimension + 1;
   
 
@@ -406,8 +406,9 @@ bool bestImprovementReinsertion(vector <int> &sequencia, double &custo){
   }
 
   if(bestDelta < 0){
+    int reinserir = sequencia[best_i];
     sequencia.erase(sequencia.begin() + best_i);
-    sequencia.insert(sequencia.begin() + best_j, copia[best_i]);
+    sequencia.insert(sequencia.begin() + best_j, reinserir);
 
     //cout << "custo antes do reinsertion: " << custo << endl;
     custo = custo + bestDelta;
@@ -440,7 +441,7 @@ bool bestImprovementOrOpt2(vector <int> &sequencia, double &custo){
   double deltaInicial, delta;
   double bestDelta = 0; 
   double custoTeste;
-  vector<int> copia = sequencia;
+  //vector<int> copia = sequencia;
   int tamanho = dimension + 1;
   
 
@@ -493,8 +494,9 @@ bool bestImprovementOrOpt2(vector <int> &sequencia, double &custo){
   //cout << "Teste 2" << endl;
   
   if(bestDelta < 0){
+    vector<int> reinserir(sequencia.begin() + best_i, sequencia.begin() + best_i + 2);
     sequencia.erase(sequencia.begin() + best_i, sequencia.begin() + best_i + 2);
-    sequencia.insert(sequencia.begin() + best_j, &copia[best_i], &copia[best_i] + 2);
+    sequencia.insert(sequencia.begin() + best_j, reinserir.begin(), reinserir.end());
     //cout << "custo antes do Oropt2: " << custo << endl;
     custo = custo + bestDelta; 
     //cout << "custo apos o Oropt2: " << custo << endl;
@@ -527,7 +529,7 @@ bool bestImprovementOrOpt3(vector <int> &sequencia, double &custo){
   double bestDelta = 0;
   double custoTeste;
   double custoAntes = custo;
-  vector<int> copia = sequencia;
+  //vector<int> copia = sequencia;
   int tamanho = dimension + 1;
   
 
@@ -567,9 +569,9 @@ bool bestImprovementOrOpt3(vector <int> &sequencia, double &custo){
   }
 
   if(bestDelta < 0){
+    vector<int> reinserir(sequencia.begin() + best_i, sequencia.begin() + best_i + 3);
     sequencia.erase(sequencia.begin() + best_i, sequencia.begin() + best_i + 3);
-    sequencia.insert(sequencia.begin() + best_j, &copia[best_i], &copia[best_i] + 3);
-
+    sequencia.insert(sequencia.begin() + best_j, reinserir.begin(), reinserir.end());
     //cout << "custo antes do Oropt3: " << custo << endl;
     custo = custo + bestDelta;
     //cout << "custo apos o Oropt3: " << custo << endl;
